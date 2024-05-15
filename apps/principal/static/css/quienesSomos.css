@@ -1,0 +1,52 @@
+body {
+    margin: 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.nav-container {
+    position: sticky;
+    z-index: 3;
+    top: 0;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    height: 12vh;
+    background-color: #dabb9e;
+}
+
+.navbar-logo {
+    justify-self: start;
+    margin-left: 20px;
+    color: #fff;
+    margin-top: 4vh;
+    cursor: pointer;
+}
+
+.icon1 {
+    width: 45px;
+    height: 45px;
+}
+
+.navbar1 {
+    background-color: rgb(255, 166, 0);
+}
+
+.footer {
+    background-color: #FFA500;
+    color: white;
+    padding: 20px 0;
+    margin-top: auto;
+}
+
+.footer-link {
+    color: white;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
