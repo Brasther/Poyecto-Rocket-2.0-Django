@@ -1,0 +1,44 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/clima.css'%}">
+{% endblock %}
+
+{% block body %}
+    <!--Api Clima -->
+<div class="weather-content">
+    <h1>Buscador del clima</h1>
+    <div class="result">
+        <p>Agrege cuidad y pais</p>
+            <h5>Clima en</h5>
+        <img src="" alt="">
+        <h2></h2>
+        <p></p>
+        <p></p>  
+    </div>
+    <form action="" method="POST" class="get-weather">
+        <input type="text" name="city" id="city" placeholder="Escribe tu ciudad...">
+        <select name="" id="country" >
+            <option disabled selected value="">Seleccione su pais</option>
+            <option value="CL">Chile</option>
+            <option value="AR">Argentina</option>
+            <option value="ES">España</option>
+            <option value="US">Estados Unidos</option>
+            <option value="MX">México</option>
+            <option value="PE">Perú</option>
+        </select>
+        <button class="btn btn-primary" value="Get Weather">Obtener clima</button>
+    </form>
+</div>
+
+<div  id="modal-container" class="modal-container "></div>
+
+{% endblock %}
+
+
+
+
+{% block script %}
+    <script src="{% static 'js/clima.js' %}"></script>
+{% endblock %}

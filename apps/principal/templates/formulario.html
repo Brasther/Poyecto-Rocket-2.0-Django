@@ -1,0 +1,246 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/.css'%}"> 
+{% endblock %}
+
+{% block body %}
+
+  
+    
+<section>
+ <!-- Formulario del remitente -->
+<div id="remitenteFormulario" class="container">
+    <h2>Datos del Remitente</h2>
+    <form id="formRemitente">
+        <div class="mb-3">
+            <label for="nombreRemitente" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombreRemitente" required>
+        </div>
+        <div class="mb-3">
+            <label for="rutRemitente" class="form-label">Rut</label>
+            <input type="text" class="form-control" id="rutRemitente" required>
+        </div>
+        <div class="mb-3">
+            <label for="direccionRemitente" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="direccionRemitente" required>
+        </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="Email">
+        </div>
+        <div class="mb-3">
+            <label for="telefonoRemitente" class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" id="telefonoRemitente">
+        </div>
+        <div class="mb-3">
+            <label for="region" class="form-label">Región</label>
+            <select class="form-select" id="region" onchange="obtenerComunas()">
+                <option value="" selected>Seleccione una región</option>
+                <!-- Aquí se cargarán las regiones desde la API -->
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="comuna" class="form-label">Comuna</label>
+            <select class="form-select" id="comuna" required>
+                <option value="" selected>Seleccione una comuna</option>
+                <!-- Aquí se cargarán las comunas según la región seleccionada -->
+            </select>
+        </div>
+        <button type="button" onclick="mostrarFormularioDestinatario()" class="btn btn-primary">Siguiente</button>
+    </form>
+</div>
+
+<!-- Formulario del destinatario -->
+<div id="destinatarioFormulario" class="container" style="display: none;">
+    <h2>Datos del Destinatario</h2>
+    <form id="formDestinatario">
+        <div class="mb-3">
+            <label for="nombreDestinatario" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombreDestinatario" required>
+        </div>
+        <div class="mb-3">
+            <label for="rutRemitente" class="form-label">Rut</label>
+            <input type="text" class="form-control" id="rutDestinatario" required>
+        </div>
+        <div class="mb-3">
+            <label for="direccionDestinatario" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="direccionDestinatario" required>
+        </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="EmailDestinatario">
+        </div>
+        <div class="mb-3">
+            <label for="telefonoDestinatario" class="form-label">Teléfono</label>
+            <input type="tel" class="form-control" id="telefonoDestinatario">
+        </div>
+        <button type="button" onclick="mostrarFormularioEnvio()" class="btn btn-primary">Siguiente</button>
+    </form>
+</div>
+
+
+
+    <!-- Formulario del remitente -->
+    <!-- <div id="remitenteFormulario" class="container">
+        <h2>Datos del Remitente</h2>
+        <form id="formRemitente">
+            <div class="mb-3">
+                <label for="nombreRemitente" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombreRemitente" required>
+            </div>
+            <div class="mb-3">
+                <label for="rutRemitente" class="form-label">Rut</label>
+                <input type="text" class="form-control" id="rutRemitente" required>
+            </div>
+            <div class="mb-3">
+                <label for="direccionRemitente" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccionRemitente" required>
+            </div>
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <input type="tel" class="form-control" id="Email">
+            </div>
+            <div class="mb-3">
+                <label for="telefonoRemitente" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="telefonoRemitente">
+            </div>
+            <button type="button" onclick="mostrarFormularioDestinatario()" class="btn btn-primary">Siguiente</button>
+        </form>
+    </div> -->
+
+    <!-- Formulario del destinatario -->
+    <div id="destinatarioFormulario" class="container" style="display: none;">
+        <h2>Datos del Destinatario</h2>
+        <form id="formDestinatario">
+            <div class="mb-3">
+                <label for="nombreDestinatario" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombreDestinatario" required>
+            </div>
+            <div class="mb-3">
+                <label for="rutRemitente" class="form-label">Rut</label>
+                <input type="text" class="form-control" id="rutRemitente" required>
+            </div>
+            <div class="mb-3">
+                <label for="direccionDestinatario" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccionDestinatario" required>
+            </div>
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email</label>
+                <input type="tel" class="form-control" id="Email">
+            </div>
+            <div class="mb-3">
+                <label for="telefonoDestinatario" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="telefonoDestinatario">
+            </div>
+            <button type="button" onclick="mostrarFormularioEnvio()" class="btn btn-primary">Siguiente</button>
+        </form>
+    </div> 
+
+    <!-- Formulario de datos de envío -->
+    <div id="envioFormulario" class="container" style="display: none;">
+        <h2>Datos de Envío</h2>
+        <form id="formEnvio">
+            <div class="mb-3">
+                <label for="tamano" class="form-label">Tamaño</label>
+                <input type="text" class="form-control" id="tamano" required>
+            </div>
+            <div class="mb-3">
+                <label for="peso" class="form-label">Peso</label>
+                <input type="text" class="form-control" id="peso" required>
+            </div>
+            <div class="mb-3">
+                <label for="dimensiones" class="form-label">Dimensiones</label>
+                <input type="text" class="form-control" id="dimensiones">
+            </div>
+            <div class="mb-3">
+                <label for="notas" class="form-label">Notas</label>
+                <textarea class="form-control" id="notas" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="tipoEnvio" class="form-label">Tipo de Envío</label>
+                <select class="form-select" id="tipoEnvio">
+                    <option value="express">Express (en todo Santiago en 24 horas)</option>
+                    <option value="normal">Normal (en todo Chile)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="tipoEnvio" class="form-label">Envio por pagar</label>
+                <input type="checkbox">
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="enviarFormulario(event)">Enviar</button>
+        </form>
+    </div>
+    
+</section>
+
+
+<h1>Formulario de Pago</h1>
+    <form method="post" action="{% url 'iniciar_transaccion' %}">
+        {% csrf_token %}
+        <label for="amount">Monto:</label>
+        <input type="number" id="amount" name="amount" required>
+        <button type="submit">Pagar</button>
+    </form>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.js' %}"></script>
+    <script>
+        function mostrarFormularioDestinatario() {
+            document.getElementById('remitenteFormulario').style.display = 'none';
+            document.getElementById('destinatarioFormulario').style.display = 'block';
+        }
+    
+        function mostrarFormularioEnvio() {
+            document.getElementById('destinatarioFormulario').style.display = 'none';
+            document.getElementById('envioFormulario').style.display = 'block';
+        }
+    
+        function enviarFormulario(event) {
+            event.preventDefault();
+            
+            alert("El formulario se ha enviado correctamente.");
+            
+        }
+    
+        
+     // Realizar una solicitud a la API para obtener las regiones
+    fetch('https://dev.matiivilla.cl/duoc/location/region')
+        .then(response => response.json())
+        .then(data => {
+            var regionSelect = document.getElementById("region");
+            data.data.forEach(region => {
+                var option = document.createElement("option");
+                option.text = region.region;
+                option.value = region.id;
+                regionSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error obteniendo regiones:', error));
+
+    function obtenerComunas() {
+        var regionId = document.getElementById("region").value;
+        // Realizar una solicitud a la API para obtener las comunas según la región seleccionada
+        // Puedes usar fetch o jQuery.ajax para hacer la solicitud
+        fetch('https://dev.matiivilla.cl/duoc/location/comuna?regionId=' + regionId)
+            .then(response => response.json())
+            .then(data => {
+                var comunasSelect = document.getElementById("comuna");
+                comunasSelect.innerHTML = ""; // Limpiar opciones anteriores
+                data.data.forEach(comuna => {
+                    var option = document.createElement("option");
+                    option.text = comuna.comuna;
+                    option.value = comuna.id;
+                    comunasSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error obteniendo comunas:', error));
+    }
+
+    </script>
+{% endblock %}

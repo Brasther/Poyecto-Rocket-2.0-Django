@@ -1,0 +1,67 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            width: 640px;
+            height: 400px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        #texto-container {
+            margin-top: 20px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="{% static 'css/quienesSomos.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="texto-container">
+                    <h1 class="text-center mb-4">Quiénes Somos</h1>
+                    <p>Somos Rocket Tracking, una empresa dedicada al servicio de envíos a todo Chile. Nuestro compromiso es ofrecer un servicio rápido, seguro y confiable para que tus paquetes lleguen a su destino de manera eficiente.</p>
+                    <p>Contamos con un equipo altamente calificado y tecnología de punta para garantizar la mejor experiencia a nuestros clientes. Además, ofrecemos envíos express exclusivos para la región de Santiago.</p>
+                    <p>¡Confía en Rocket Tracking para tus envíos!</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="{% static 'imagenes/quienesSomos.jpg' %}" width="200" height="350" class="d-block w-100" alt="Envío Express">
+            </div>
+        </div>
+        <div class="row bottom-margin">
+            <div class="col-md-6">
+                <div id="texto-container">
+                    <p>Encuéntranos en:</p>
+                    <p>Dirección: Av. falsa 123, Santiago, Chile</p>
+                    <p>Teléfono: +56 9 1234 5678</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="map-container">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var latitud = -33.5000852;
+        var longitud = -70.6188677;
+        var map = L.map('map').setView([latitud, longitud], 17); 
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+        L.marker([latitud, longitud]).addTo(map)
+            .bindPopup('Casa Matriz')
+            .openPopup();
+    </script>
+{% endblock %}
