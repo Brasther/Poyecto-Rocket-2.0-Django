@@ -93,19 +93,15 @@ def iniciar_transaccion(request):
         if 'token' in response and 'url' in response:
             return redirect(response['url'] + '?token_ws=' + response['token'])
         else:
-            # Manejo de errores =?????
             return render(request, 'error.html', {'message': 'Error al iniciar la transacción.'})
     else:
         return redirect('mostrar_formulario')
-    
 
 def completar_transaccion(request):
     token = request.GET.get('token_ws')
     response = Transaction().commit(token)
     
-    
     if 'response_code' in response and response['response_code'] == 0:
         return render(request, 'success.html', {'response': response})
     else:
-        # Manejo de errores
         return render(request, 'error.html', {'message': 'Error al completar la transacción.'})
