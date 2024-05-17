@@ -81,6 +81,53 @@
 </div>
 
 
+<!-- <div id="envioFormulario" class="container" style="display: none;">
+    <h2>Datos de Envío</h2>
+    <form id="formEnvio" method="post" action="{% url 'iniciar_transaccion' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="peso" class="form-label">Peso (kg)</label>
+            <input type="number" class="form-control" id="peso" name="peso" required>
+        </div>
+        <div class="mb-3">
+            <label for="alto" class="form-label">Alto (cm)</label>
+            <input type="number" class="form-control" id="alto" name="alto" required>
+        </div>
+        <div class="mb-3">
+            <label for="ancho" class="form-label">Ancho (cm)</label>
+            <input type="number" class="form-control" id="ancho" name="ancho" required>
+        </div>
+        <div class="mb-3">
+            <label for="largo" class="form-label">Largo (cm)</label>
+            <input type="number" class="form-control" id="largo" name="largo" required>
+        </div>
+        <div class="mb-3">
+            <label for="notas" class="form-label">Notas</label>
+            <textarea class="form-control" id="notas" name="notas" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="tipoEnvio" class="form-label">Tipo de Envío</label>
+            <select class="form-select" id="tipoEnvio" name="tipoEnvio" onchange="calcularPrecio()" required>
+                <option value="express">Express (en todo Santiago en 24 horas)</option>
+                <option value="normal">Normal (en todo Chile)</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="envioPorPagar" class="form-label">Envio por pagar</label>
+            <input type="checkbox" id="envioPorPagar" name="envioPorPagar">
+        </div>
+        <div class="mb-3">
+            <label for="amount">Monto:</label>
+            <input type="number" id="amount" name="amount" readonly required>
+        </div>
+        <div class="mb-3">
+            <label for="calculatedAmount">Precio Calculado:</label>
+            <span id="calculatedAmount">$0</span>
+        </div>
+        <button type="submit" class="btn btn-primary">Pagar</button>
+    </form>
+</div> -->
+
 <div id="envioFormulario" class="container" style="display: none;">
     <h2>Datos de Envío</h2>
     <form id="formEnvio" method="post" action="{% url 'iniciar_transaccion' %}">
@@ -110,6 +157,13 @@
             <select class="form-select" id="tipoEnvio" name="tipoEnvio" onchange="calcularPrecio()" required>
                 <option value="express">Express (en todo Santiago en 24 horas)</option>
                 <option value="normal">Normal (en todo Chile)</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="region" class="form-label">Región</label>
+            <select class="form-select" id="region" name="region" onchange="calcularPrecio()" >
+                <option value="" selected>Seleccione una región</option>
+                <!-- Aquí se cargarán las regiones desde la API -->
             </select>
         </div>
         <div class="mb-3">
@@ -160,7 +214,24 @@
         document.getElementById('envioFormulario').style.display = 'block';
     }
 
-
+    const preciosRegion = {
+        1: 15000, // Arica y Parinacota
+        2: 14000, // Tarapacá
+        3: 13000, // Antofagasta
+        4: 10000, // Atacama
+        5: 8000,  // Coquimbo
+        6: 6000,  // Valparaíso
+        7: 4000,  // Metropolitana de Santiago
+        8: 5000,  // Libertador General Bernardo O'Higgins
+        9: 7000,  // Maule
+        10: 8000, // Ñuble
+        11: 9000, // Biobío
+        12: 10000, // La Araucanía
+        13: 11000, // Los Ríos
+        14: 12000, // Los Lagos
+        15: 15000, // Aysén del General Carlos Ibáñez del Campo
+        16: 18000  // Magallanes y de la Antártica Chilena
+    };
     const comunasPorRegion = {
     1: ["Arica", "Camarones", "Putre", "General Lagos"],
     2: ["Iquique", "Alto Hospicio", "Pozo Almonte", "Camiña", "Colchane", "Huara", "Pica"],
@@ -216,11 +287,12 @@
         const ancho = parseFloat(document.getElementById("ancho").value) || 0;
         const largo = parseFloat(document.getElementById("largo").value) || 0;
         const tipoEnvio = document.getElementById("tipoEnvio").value;
+        const regionId = document.getElementById("region").value;
         const amountInput = document.getElementById("amount");
         const calculatedAmountSpan = document.getElementById("calculatedAmount");
 
         // Factores ajustados para reflejar precios realistas
-        const precioBase = 1000; // Precio base en pesos chilenos
+        const precioBase = preciosRegion[regionId] || 0;
         const pesoFactor = 300; // Factor de precio por kilogramo en pesos chilenos
         const dimensionFactor = 0.005; // Factor de precio por cm^3 en pesos chilenos
         const tipoEnvioFactor = tipoEnvio === 'express' ? 2 : 1; // Factor de tipo de envío
@@ -241,6 +313,7 @@
     document.getElementById("ancho").addEventListener("input", calcularPrecio);
     document.getElementById("largo").addEventListener("input", calcularPrecio);
     document.getElementById("tipoEnvio").addEventListener("change", calcularPrecio);
+    document.getElementById("region").addEventListener("change", calcularPrecio);
 
     </script>
 {% endblock %}
