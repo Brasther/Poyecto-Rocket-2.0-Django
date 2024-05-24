@@ -1,0 +1,32 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/quienesSomos.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="texto-container">
+                <h1 class="text-center mb-4">Powered By Rocket Tech</h1>
+                <p>Somos Rocket Tech, una empresa dedicada a desarrollar soluciones tecnológicas innovadoras que transforman negocios y mejoran vidas. Con un equipo de expertos apasionados, llevamos a nuestros clientes hacia nuevas alturas de éxito. ¡Descubre el futuro con nosotros!</p>
+               
+                
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'imagenes/logoRocket.png' %}" width="200" height="350" class="d-block w-100" alt="Envío Express">
+        </div>
+    </div>
+</div>
+
+
+
+    
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}
