@@ -2,196 +2,210 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'css/.css'%}"> 
+    <link rel="stylesheet" href="{% static 'css/'%}"> 
 {% endblock %}
 
 {% block body %}
 
-  
+<title>Formulario</title>
+
     
 <section>
- <!-- Formulario del remitente -->
- <div id="remitenteFormulario" class="container">
-    <h2>Datos del Remitente</h2>
-    <form id="formRemitente">
-        <div class="mb-3">
-            <label for="nombreRemitente" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombreRemitente" required>
-        </div>
-        <div class="mb-3">
-            <label for="rutRemitente" class="form-label">Rut</label>
-            <input type="text" class="form-control" id="rutRemitente" required>
-        </div>
-        <div class="mb-3">
-            <label for="direccionRemitente" class="form-label">Dirección</label>
-            <input type="text" class="form-control" id="direccionRemitente" required>
-        </div>
-        <div class="mb-3">
-            <label for="Email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="Email">
-        </div>
-        <div class="mb-3">
-            <label for="telefonoRemitente" class="form-label">Teléfono</label>
-            <input type="tel" class="form-control" id="telefonoRemitente">
-        </div>
-        <div class="mb-3">
-            <label for="region" class="form-label">Región</label>
-            <select class="form-select" id="region" onchange="obtenerComunas()">
-                <option value="" selected>Seleccione una región</option>
-                <!-- Aquí se cargarán las regiones desde la API -->
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="comuna" class="form-label">Comuna</label>
-            <select class="form-select" id="comuna" required>
-                <option value="" selected>Seleccione una comuna</option>
-                <!-- Aquí se cargarán las comunas según la región seleccionada -->
-            </select>
-        </div>
-        <button type="button" onclick="mostrarFormularioDestinatario()" class="btn btn-primary">Siguiente</button>
-    </form>
-</div>
-
-<!-- Formulario del destinatario -->
-<div id="destinatarioFormulario" class="container" style="display: none;">
-    <h2>Datos del Destinatario</h2>
-    <form id="formDestinatario">
-        <div class="mb-3">
-            <label for="nombreDestinatario" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombreDestinatario" required>
-        </div>
-        <div class="mb-3">
-            <label for="rutRemitente" class="form-label">Rut</label>
-            <input type="text" class="form-control" id="rutDestinatario" required>
-        </div>
-        <div class="mb-3">
-            <label for="direccionDestinatario" class="form-label">Dirección</label>
-            <input type="text" class="form-control" id="direccionDestinatario" required>
-        </div>
-        <div class="mb-3">
-            <label for="Email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="EmailDestinatario">
-        </div>
-        <div class="mb-3">
-            <label for="telefonoDestinatario" class="form-label">Teléfono</label>
-            <input type="tel" class="form-control" id="telefonoDestinatario">
-        </div>
-        <button type="button" onclick="mostrarFormularioEnvio()" class="btn btn-primary">Siguiente</button>
-    </form>
-</div>
-
-
-<!-- <div id="envioFormulario" class="container" style="display: none;">
-    <h2>Datos de Envío</h2>
-    <form id="formEnvio" method="post" action="{% url 'iniciar_transaccion' %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="peso" class="form-label">Peso (kg)</label>
-            <input type="number" class="form-control" id="peso" name="peso" required>
-        </div>
-        <div class="mb-3">
-            <label for="alto" class="form-label">Alto (cm)</label>
-            <input type="number" class="form-control" id="alto" name="alto" required>
-        </div>
-        <div class="mb-3">
-            <label for="ancho" class="form-label">Ancho (cm)</label>
-            <input type="number" class="form-control" id="ancho" name="ancho" required>
-        </div>
-        <div class="mb-3">
-            <label for="largo" class="form-label">Largo (cm)</label>
-            <input type="number" class="form-control" id="largo" name="largo" required>
-        </div>
-        <div class="mb-3">
-            <label for="notas" class="form-label">Notas</label>
-            <textarea class="form-control" id="notas" name="notas" rows="3"></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="tipoEnvio" class="form-label">Tipo de Envío</label>
-            <select class="form-select" id="tipoEnvio" name="tipoEnvio" onchange="calcularPrecio()" required>
-                <option value="express">Express (en todo Santiago en 24 horas)</option>
-                <option value="normal">Normal (en todo Chile)</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="envioPorPagar" class="form-label">Envio por pagar</label>
-            <input type="checkbox" id="envioPorPagar" name="envioPorPagar">
-        </div>
-        <div class="mb-3">
-            <label for="amount">Monto:</label>
-            <input type="number" id="amount" name="amount" readonly required>
-        </div>
-        <div class="mb-3">
-            <label for="calculatedAmount">Precio Calculado:</label>
-            <span id="calculatedAmount">$0</span>
-        </div>
-        <button type="submit" class="btn btn-primary">Pagar</button>
-    </form>
-</div> -->
-
-<div id="envioFormulario" class="container" style="display: none;">
-    <h2>Datos de Envío</h2>
-    <form id="formEnvio" method="post" action="{% url 'iniciar_transaccion' %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="peso" class="form-label">Peso (kg)</label>
-            <input type="number" class="form-control" id="peso" name="peso" required>
-        </div>
-        <div class="mb-3">
-            <label for="alto" class="form-label">Alto (cm)</label>
-            <input type="number" class="form-control" id="alto" name="alto" required>
-        </div>
-        <div class="mb-3">
-            <label for="ancho" class="form-label">Ancho (cm)</label>
-            <input type="number" class="form-control" id="ancho" name="ancho" required>
-        </div>
-        <div class="mb-3">
-            <label for="largo" class="form-label">Largo (cm)</label>
-            <input type="number" class="form-control" id="largo" name="largo" required>
-        </div>
-        <div class="mb-3">
-            <label for="notas" class="form-label">Notas</label>
-            <textarea class="form-control" id="notas" name="notas" rows="3"></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="tipoEnvio" class="form-label">Tipo de Envío</label>
-            <select class="form-select" id="tipoEnvio" name="tipoEnvio" onchange="calcularPrecio()" required>
-                <option value="express">Express (en todo Santiago en 24 horas)</option>
-                <option value="normal">Normal (en todo Chile)</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="region" class="form-label">Región</label>
-            <select class="form-select" id="region" name="region" onchange="calcularPrecio()" >
-                <option value="" selected>Seleccione una región</option>
-                <!-- Aquí se cargarán las regiones desde la API -->
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="envioPorPagar" class="form-label">Envio por pagar</label>
-            <input type="checkbox" id="envioPorPagar" name="envioPorPagar">
-        </div>
-        <div class="mb-3">
-            <label for="amount">Monto:</label>
-            <input type="number" id="amount" name="amount" readonly required>
-        </div>
-        <div class="mb-3">
-            <label for="calculatedAmount">Precio Calculado:</label>
-            <span id="calculatedAmount">$0</span>
-        </div>
-        <button type="submit" class="btn btn-primary">Pagar</button>
-    </form>
-</div>
+    <div class="container">
+        <h2>Datos del Remitente, Destinatario y Envío </h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post" id="formulario" action="{% url 'iniciar_transaccion' %}">
+            {% csrf_token %}
     
-</section>
+            <!-- Sección de datos del remitente -->
+            <div id="remitenteFormulario">
+                <h3>Datos del Remitente</h3>
+                <div class="mb-3">
+                    <label for="nombreRemitente" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombreRemitente" name="nombreRemitente" required>
+                </div>
+                <div class="mb-3">
+                    <label for="rutRemitente" class="form-label">Rut</label>
+                    <input type="text" class="form-control" id="rutRemitente" name="rutRemitente" required>
+                </div>
+                <div class="mb-3">
+                    <label for="direccionRemitente" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccionRemitente" name="direccionRemitente" required>
+                </div>
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="Email" name="Email">
+                </div>
+                <div class="mb-3">
+                    <label for="telefonoRemitente" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefonoRemitente" name="telefonoRemitente">
+                </div>
+    
+                <button type="button" class="btn btn-primary" id="btnSiguienteRemitente">Siguiente</button>
+            </div>
+    
+            <!-- Sección de datos del destinatario -->
+            <div id="destinatarioFormulario" style="display:none;">
+                <h3>Datos del Destinatario</h3>
+                <div class="mb-3">
+                    <label for="rutDestinatario" class="form-label">Rut</label>
+                    <input type="text" class="form-control" id="rutDestinatario" name="rutDestinatario" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nombreDestinatario" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombreDestinatario" name="nombreDestinatario" required>
+                </div>
+                <div class="mb-3">
+                    <label for="direccionDestinatario" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccionDestinatario" name="direccionDestinatario" required>
+                </div>
+                <div class="mb-3">
+                    <label for="emailDestinatario" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="emailDestinatario" name="emailDestinatario">
+                </div>
+                <div class="mb-3">
+                    <label for="region" class="form-label">Región</label>
+                    <select class="form-select" id="region" name="region" onchange="obtenerComunas()">
+                        <option value="" selected>Seleccione una región</option>
+                        <!-- Aquí se generan dinámicamente las opciones de región -->
+                        <option value="1">Arica y Parinacota</option>
+                        <option value="2">Tarapacá</option>
+                        <option value="3">Antofagasta</option>
+                        <option value="4">Atacama</option>
+                        <option value="5">Coquimbo</option>
+                        <option value="6">Valparaíso</option>
+                        <option value="7">Metropolitana de Santiago</option>
+                        <option value="8">Libertador General Bernardo O'Higgins</option>
+                        <option value="9">Maule</option>
+                        <option value="10">Ñuble</option>
+                        <option value="11">Biobío</option>
+                        <option value="12">La Araucanía</option>
+                        <option value="13">Los Ríos</option>
+                        <option value="14">Los Lagos</option>
+                        <option value="15">Aysén del General Carlos Ibáñez del Campo</option>
+                        <option value="16">Magallanes y de la Antártica Chilena</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="comuna" class="form-label">Comuna</label>
+                    <select class="form-select" id="comuna" name="comuna">
+                        <option value="" selected>Seleccione una comuna</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="telefonoDestinatario" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefonoDestinatario" name="telefonoDestinatario">
+                </div>
+                
+                <button type="button" class="btn btn-primary" id="btnSiguienteDestinatario">Siguiente</button>
+            </div>
+    
+            <!-- Sección de datos del envío -->
+            <div id="envioFormulario" style="display:none;">
+                <h3>Datos del Envío</h3>
+                <div class="mb-3">
+                    <label for="tipoPaquete" class="form-label">Tipo de Paquete</label>
+                    <select class="form-select" id="tipoPaquete" name="tipoPaquete" required>
+                        <option value="xs">XS</option>
+                        <option value="s">S</option>
+                        <option value="m">M</option>
+                        <option value="l">L</option>
+                        <option value="xl">XL</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="tipoEnvio" class="form-label">Tipo de Envío</label>
+                    <select class="form-select" id="tipoEnvio" name="tipoEnvio" required>
+                        <option value="normal">Envío Normal</option>
+                        <option value="express">Envío Express 24hrs</option>
+                    </select>
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="pagado" name="pagado">
+                    <label for="pagado" class="form-check-label">Pagado</label>
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="porPagar" name="porPagar">
+                    <label for="porPagar" class="form-check-label">Por Pagar</label>
+                </div>
+                <button type="button" class="btn btn-primary" id="btnCalcular">Calcular Total</button>
+                <div class="mb-3">
+                    <label for="totalAmount" class="form-label">Total a Pagar</label>
+                    <input type="text" class="form-control" id="totalAmount" name="totalAmount" readonly>
+                </div>
+                <input type="hidden" id="costoTotal" name="costoTotal"> <!-- Campo oculto para el costo total -->
+                <button type="submit" class="btn btn-primary">Iniciar Transacción</button>
 
-
-<h1>Formulario de Pago</h1>
-    <form method="post" action="{% url 'iniciar_transaccion' %}">
+            </div>
+        </form>
+    <!-- <pre>{{ transacciones }}</pre> -->
+    </div>
+    <h1>Formulario de Pago</h1>
+    <form method="post" action="{% url 'iniciar_transaccion_trans' %}">
         {% csrf_token %}
         <label for="amount">Monto:</label>
         <input type="number" id="amount" name="amount" required>
         <button type="submit">Pagar</button>
-    </form>
+    </form>  
+<!-- Sección para mostrar transacciones -->
+
+
+<!-- <div class="mb-3">
+    <label for="region" class="form-label">Región</label>
+    <select class="form-select" id="region" name="region" onchange="obtenerComunas()">
+        <option value="" selected>Seleccione una región</option>
+        <option value="1">Arica y Parinacota</option>
+        <option value="2">Tarapacá</option>
+        <option value="3">Antofagasta</option>
+        <option value="4">Atacama</option>
+        <option value="5">Coquimbo</option>
+        <option value="6">Valparaíso</option>
+        <option value="7">Metropolitana de Santiago</option>
+        <option value="8">Libertador General Bernardo O'Higgins</option>
+        <option value="9">Maule</option>
+        <option value="10">Ñuble</option>
+        <option value="11">Biobío</option>
+        <option value="12">La Araucanía</option>
+        <option value="13">Los Ríos</option>
+        <option value="14">Los Lagos</option>
+        <option value="15">Aysén del General Carlos Ibáñez del Campo</option>
+        <option value="16">Magallanes y de la Antártica Chilena</option>
+    </select>
+</div>
+<div class="mb-3">
+    <label for="comuna" class="form-label">Comuna</label>
+    <select class="form-select" id="comuna" name="comuna">
+        <option value="" selected>Seleccione una comuna</option>
+    </select>
+</div>
+
+
+<h1>Formulario de Pago</h1>
+    <form method="post" action="{% url 'iniciar_transaccion_trans' %}">
+        {% csrf_token %}
+        <label for="amount">Monto:</label>
+        <input type="number" id="amount" name="amount" required>
+        <button type="submit">Pagar</button>
+    </form>  -->
+
+    
+
+
+
+
+
+    
+
+</section>
+
+<br><br><br><br><br><br>
 
 {% endblock %}
 
@@ -199,121 +213,153 @@
     <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
     <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
     <script src="{% static 'js/jquery/jquery.js' %}"></script>
+    <script src="{% static 'js/formulario.js' %}"></script>
+  
     <script>
-        function mostrarFormularioDestinatario() {
-        document.getElementById('remitenteFormulario').style.display = 'none';
-        document.getElementById('destinatarioFormulario').style.display = 'block';
-    }
+        $(document).ready(function() {
+        $('#btnSiguienteRemitente').click(function() {
+            $('#remitenteFormulario').hide();
+            $('#destinatarioFormulario').show();
+        });
 
-    function mostrarFormularioDestinatario() {
-        document.getElementById('remitenteFormulario').style.display = 'none';
-        document.getElementById('destinatarioFormulario').style.display = 'block';
-    }
-    function mostrarFormularioEnvio() {
-        document.getElementById('destinatarioFormulario').style.display = 'none';
-        document.getElementById('envioFormulario').style.display = 'block';
-    }
+        $('#btnSiguienteDestinatario').click(function() {
+            $('#destinatarioFormulario').hide();
+            $('#envioFormulario').show();
+        });
 
-    const preciosRegion = {
-        1: 15000, // Arica y Parinacota
-        2: 14000, // Tarapacá
-        3: 13000, // Antofagasta
-        4: 10000, // Atacama
-        5: 8000,  // Coquimbo
-        6: 6000,  // Valparaíso
-        7: 4000,  // Metropolitana de Santiago
-        8: 5000,  // Libertador General Bernardo O'Higgins
-        9: 7000,  // Maule
-        10: 8000, // Ñuble
-        11: 9000, // Biobío
-        12: 10000, // La Araucanía
-        13: 11000, // Los Ríos
-        14: 12000, // Los Lagos
-        15: 15000, // Aysén del General Carlos Ibáñez del Campo
-        16: 18000  // Magallanes y de la Antártica Chilena
-    };
-    const comunasPorRegion = {
-    1: ["Arica", "Camarones", "Putre", "General Lagos"],
-    2: ["Iquique", "Alto Hospicio", "Pozo Almonte", "Camiña", "Colchane", "Huara", "Pica"],
-    3: ["Antofagasta", "Mejillones", "Sierra Gorda", "Taltal", "Calama", "Ollagüe", "San Pedro de Atacama"],
-    4: ["Copiapó", "Caldera", "Tierra Amarilla", "Chañaral", "Diego de Almagro", "Vallenar", "Alto del Carmen", "Freirina", "Huasco"],
-    5: ["La Serena", "Coquimbo", "Andacollo", "La Higuera", "Paiguano", "Vicuña", "Illapel", "Canela", "Los Vilos", "Salamanca", "Ovalle", "Combarbalá", "Monte Patria", "Punitaqui", "Río Hurtado"],
-    6: ["Valparaíso", "Viña del Mar", "Concón", "Quintero", "Puchuncaví", "Casablanca", "Quilpué", "Villa Alemana", "Limache", "Olmué", "Quillota", "La Cruz", "La Calera", "Nogales", "Hijuelas", "San Antonio", "Cartagena", "El Tabo", "El Quisco", "Algarrobo", "Santo Domingo", "San Felipe", "Llaillay", "Catemu", "Putaendo", "Panquehue", "Santa María", "Los Andes", "Calle Larga", "Rinconada", "San Esteban", "Petorca", "La Ligua", "Cabildo", "Zapallar", "Papudo"],
-    7: ["Santiago", "Cerrillos", "Cerro Navia", "Conchalí", "El Bosque", "Estación Central", "Huechuraba", "Independencia", "La Cisterna", "La Florida", "La Granja", "La Pintana", "La Reina", "Las Condes", "Lo Barnechea", "Lo Espejo", "Lo Prado", "Macul", "Maipú", "Ñuñoa", "Pedro Aguirre Cerda", "Peñalolén", "Providencia", "Pudahuel", "Quilicura", "Quinta Normal", "Recoleta", "Renca", "San Joaquín", "San Miguel", "San Ramón", "Vitacura", "Puente Alto", "Pirque", "San José de Maipo", "Colina", "Lampa", "Tiltil", "San Bernardo", "Buin", "Calera de Tango", "Paine", "Melipilla", "Alhué", "Curacaví", "María Pinto", "San Pedro", "Talagante", "El Monte", "Isla de Maipo", "Padre Hurtado", "Peñaflor"],
-    8: ["Rancagua", "Machalí", "Graneros", "Mostazal", "Requínoa", "Rengo", "Malloa", "San Vicente", "Pichidegua", "Las Cabras", "Peumo", "Coltauco", "Doñihue", "Coinco", "Olivar", "Gultro", "San Fernando", "Santa Cruz", "Chimbarongo", "Placilla", "Nancagua", "Palmilla", "Peralillo", "Pumanque", "Marchigüe", "Lolol", "Paredones", "Pichilemu", "Navidad", "La Estrella", "Litueche"],
-    9: ["Talca", "Constitución", "Curepto", "Empedrado", "Maule", "Pelarco", "Pencahue", "Río Claro", "San Clemente", "San Rafael", "Cauquenes", "Chanco", "Pelluhue", "Curicó", "Hualañé", "Licantén", "Molina", "Rauco", "Romeral", "Sagrada Familia", "Teno", "Vichuquén", "Linares", "Colbún", "Longaví", "Parral", "Retiro", "San Javier", "Villa Alegre", "Yerbas Buenas"],
-    10: ["Chillán", "Chillán Viejo", "Quirihue", "Cobquecura", "Ninhue", "Trehuaco", "Coelemu", "Portezuelo", "Ránquil", "Bulnes", "Quillón", "San Ignacio", "El Carmen", "Pemuco", "Yungay", "Pinto", "San Carlos", "Ñiquén", "San Fabián", "San Nicolás"],
-    11: ["Concepción", "Coronel", "Chiguayante", "Florida", "Hualqui", "Lota", "Penco", "San Pedro de la Paz", "Santa Juana", "Talcahuano", "Tomé", "Hualpén", "Lebu", "Arauco", "Cañete", "Contulmo", "Curanilahue", "Los Álamos", "Tirúa", "Los Ángeles", "Antuco", "Cabrero", "Laja", "Mulchén", "Nacimiento", "Negrete", "Quilaco", "Quilleco", "San Rosendo", "Santa Bárbara", "Tucapel", "Yumbel", "Alto Biobío"],
-    12: ["Temuco", "Carahue", "Cunco", "Curarrehue", "Freire", "Galvarino", "Gorbea", "Lautaro", "Loncoche", "Melipeuco", "Nueva Imperial", "Padre Las Casas", "Perquenco", "Pitrufquén", "Pucón", "Saavedra", "Teodoro Schmidt", "Toltén", "Vilcún", "Villarrica", "Cholchol", "Angol", "Collipulli", "Curacautín", "Ercilla", "Lonquimay", "Los Sauces", "Lumaco", "Purén", "Renaico", "Traiguén", "Victoria"],
-    13: ["Valdivia", "Corral", "Lanco", "Los Lagos", "Máfil", "Mariquina", "Paillaco", "Panguipulli", "La Unión", "Futrono", "Lago Ranco", "Río Bueno"],
-    14: ["Puerto Montt", "Calbuco", "Cochamó", "Fresia", "Frutillar", "Los Muermos", "Llanquihue", "Maullín", "Puerto Varas", "Castro", "Ancud", "Chonchi", "Curaco de Vélez", "Dalcahue", "Puqueldón", "Queilén", "Quellón", "Quemchi", "Quinchao", "Osorno", "Puerto Octay", "Purranque", "Puyehue", "Río Negro", "San Juan de la Costa", "San Pablo", "Chaitén", "Futaleufú", "Hualaihué", "Palena"],
-    15: ["Coyhaique", "Lago Verde", "Aysén", "Cisnes", "Guaitecas", "Cochrane", "O'Higgins", "Tortel", "Chile Chico", "Río Ibáñez"],
-    16: ["Punta Arenas", "Laguna Blanca", "Río Verde", "San Gregorio", "Cabo de Hornos", "Antártica", "Porvenir", "Primavera", "Timaukel", "Natales", "Torres del Paine"]
-    };
+        $('#btnCalcular').click(function() {
+            var tipoPaquete = $('#tipoPaquete').val();
+            var tipoEnvio = $('#tipoEnvio').val();
+            var costo = 0;
 
+            switch(tipoPaquete) {
+                case 'xs': costo = 10; break;
+                case 's': costo = 20; break;
+                case 'm': costo = 30; break;
+                case 'l': costo = 40; break;
+                case 'xl': costo = 50; break;
+            }
 
-    function obtenerComunas() {
-        var regionId = document.getElementById("region").value;
-        var comunaSelect = document.getElementById("comuna");
-        comunaSelect.innerHTML = '<option value="" selected>Seleccione una comuna</option>'; // Resetear las comunas
+            if (tipoEnvio === 'express') costo += 15;
 
-        if (regionId && comunasPorRegion[regionId]) {
-            comunasPorRegion[regionId].forEach(comuna => {
-                var option = document.createElement("option");
-                option.text = comuna;
-                option.value = comuna;
-                comunaSelect.appendChild(option);
-            });
-        }
-    }
-
-    // Realizar una solicitud a la API para obtener las regiones
-    fetch('https://dev.matiivilla.cl/duoc/location/region')
-        .then(response => response.json())
-        .then(data => {
-            var regionSelect = document.getElementById("region");
-            data.data.forEach(region => {
-                var option = document.createElement("option");
-                option.text = region.region;
-                option.value = region.id;
-                regionSelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error obteniendo regiones:', error));
-    
-        function calcularPrecio() {
-        const peso = parseFloat(document.getElementById("peso").value) || 0;
-        const alto = parseFloat(document.getElementById("alto").value) || 0;
-        const ancho = parseFloat(document.getElementById("ancho").value) || 0;
-        const largo = parseFloat(document.getElementById("largo").value) || 0;
-        const tipoEnvio = document.getElementById("tipoEnvio").value;
-        const regionId = document.getElementById("region").value;
-        const amountInput = document.getElementById("amount");
-        const calculatedAmountSpan = document.getElementById("calculatedAmount");
-
-        // Factores ajustados para reflejar precios realistas
-        const precioBase = preciosRegion[regionId] || 0;
-        const pesoFactor = 300; // Factor de precio por kilogramo en pesos chilenos
-        const dimensionFactor = 0.005; // Factor de precio por cm^3 en pesos chilenos
-        const tipoEnvioFactor = tipoEnvio === 'express' ? 2 : 1; // Factor de tipo de envío
-
-        // Calcular el volumen en cm^3
-        const volumen = alto * ancho * largo;
-
-        // Calcular el precio total
-        const precio = precioBase + (peso * pesoFactor) + (volumen * dimensionFactor * tipoEnvioFactor);
-
-        // Mostrar y asignar el precio calculado
-        amountInput.value = Math.round(precio);
-        calculatedAmountSpan.textContent = `$${Math.round(precio).toLocaleString('es-CL')}`;
-    }
-
-    document.getElementById("peso").addEventListener("input", calcularPrecio);
-    document.getElementById("alto").addEventListener("input", calcularPrecio);
-    document.getElementById("ancho").addEventListener("input", calcularPrecio);
-    document.getElementById("largo").addEventListener("input", calcularPrecio);
-    document.getElementById("tipoEnvio").addEventListener("change", calcularPrecio);
-    document.getElementById("region").addEventListener("change", calcularPrecio);
-
+            $('#amount').val('$' + costo);
+            $('#costoTotal').val(costo);
+        });
+    });
     </script>
 {% endblock %}
+
+
+
+<!-- <h1>Formulario de Pago</h1>
+    <form method="post" action="{% url 'iniciar_transaccion' %}">
+        {% csrf_token %}
+        <label for="amount">Monto:</label>
+        <input type="number" id="amount" name="amount" required>
+        <button type="submit">Pagar</button>
+    </form> -->
+
+
+
+
+
+<!-- <div class="container">
+        <h3>Agregar productos preuab</h3>
+        <form id="agregarProductoForm" action="/agregarProductoForm" method="POST" enctype="multipart/form-data"> 
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="txtSku">SKU:</label>
+                    <input name="txtSku" id="txtSku" type="text" class="form-control">
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}   
+                </div>
+                
+                <div class="col-md-8">
+                    <label for="txtNombre">Nombre:</label>
+                    <input name="txtNombre" id="txtNombre" type="text" class="form-control">
+                </div>
+    
+                <div class="col-md-4">
+                    <label for="txtStock">Stock:</label>
+                    <input name="txtStock" id="txtStock" type="text" class="form-control">
+                </div>
+    
+                <div class="col-md-4">
+                    <label for="txtPrecio">Precio:</label>
+                    <input name="txtPrecio" id="txtPrecio" type="text" class="form-control">
+                </div>
+    
+                <div class="col-md-12">
+                    <label for="txtDescripcion">Descripción:</label>
+                    <input name="txtDescripcion" id="txtDescripcion" type="text" class="form-control">
+                </div>
+    
+                <div class="col-md-12">
+                    <label for="txtNota">Nota:</label>
+                    <input name="txtNota" id="txtNota" type="text" class="form-control">
+                </div>
+    
+                <div class="mb-3">
+                    <label for="region" class="form-label">Región</label>
+                    <select class="form-select" id="region" name="region" onchange="obtenerComunas()">
+                        <option value="" selected>Seleccione una región</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="comuna" class="form-label">Comuna</label>
+                    <select class="form-select" id="comuna" name="comuna">
+                        <option value="" selected>Seleccione una comuna</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-success mt-5 w-100">Agregar producto</button>
+        </form>
+    </div>
+     
+
+    <div class="container mt-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">SKU</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Nota</th>
+                    <th scope="col">region</th>
+                    <th scope="col">comula</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in prod %}
+                <tr>
+                    <th scope="row">{{ p.sku }}</th>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.stock }}</td>
+                    <td>{{ p.precio }}</td>
+                    <td>{{ p.descripcion }}</td>
+                    <td>{{ p.nota }}</td>
+                    <td>{{ p.region }}</td>
+                    <td>{{ p.comuna }}</td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <pre>{{ prod }}</pre>
+<h1>Formulario de Pago</h1>
+    <form method="post" action="{% url 'iniciar_transaccion' %}">
+        {% csrf_token %}
+        <label for="amount">Monto:</label>
+        <input type="number" id="amount" name="amount" required>
+        <button type="submit">Pagar</button>
+    </form>  -->

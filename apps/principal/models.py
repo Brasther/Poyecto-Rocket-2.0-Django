@@ -3,14 +3,57 @@ from django.contrib.auth.models import User  #
 from django.db import models, IntegrityError
 
 # Create your models here.
+from django.db import models
 
-class Categoria(models.Model):
-    id_categoria = models.IntegerField(primary_key=True)
-    nombre_categoria = models.CharField(max_length=100)
+
+
+class Transaccion(models.Model):
+
+    TIPO_PAQUETE_CHOICES = [
+        ('xs', 'XS'),
+        ('s', 'S'),
+        ('m', 'M'),
+        ('l', 'L'),
+        ('xl', 'XL'),
+    ]
+
+    TIPO_ENVIO_CHOICES = [
+        ('normal', 'Envío Normal'),
+        ('express', 'Envío Express 24hrs'),
+    ]
+
+    
+    ID = models.IntegerField(primary_key=True, unique=True,default=0.0)
+    
+    # Datos del remitente
+    nombre_remitente = models.CharField(max_length=100)
+    rut_remitente = models.CharField(max_length=12)
+    direccion_remitente = models.CharField(max_length=255)
+    email_remitente = models.EmailField(blank=True, null=True)
+    telefono_remitente = models.CharField(max_length=20, blank=True, null=True)
+
+    # Datos del destinatario
+    nombre_destinatario = models.CharField(max_length=100)
+    rut_destinatario = models.CharField(max_length=12)
+    direccion_destinatario = models.CharField(max_length=255)
+    email_destinatario = models.EmailField(blank=True, null=True)
+    telefono_destinatario = models.CharField(max_length=20, blank=True, null=True)
+
+
+    # Datos del envío
+    tipo_paquete = models.CharField(max_length=2, choices=TIPO_PAQUETE_CHOICES)
+    tipo_envio = models.CharField(max_length=10, choices=TIPO_ENVIO_CHOICES)
+    pagado = models.BooleanField(default=False)
+    por_pagar = models.BooleanField(default=False)
+    costo_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     def __str__(self):
-        txt = "Nombre: {0} - Id: {1}"
-        return txt.format(self.nombre_categoria,self.id_categoria)
+        return f"Transacción de {self.nombre_remitente} a {self.nombre_destinatario} ({self.ID})"
+
+
+    
+#-----------------------------------
+
 
 class Producto(models.Model):
     sku = models.IntegerField(primary_key=True, unique=True)
@@ -18,28 +61,7 @@ class Producto(models.Model):
     stock = models.IntegerField()
     precio = models.IntegerField()
     descripcion = models.CharField(max_length=200)
-    id_categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
-    imagen_url = models.ImageField(upload_to='imagenesProducto')
+    nota = models.CharField(max_length=200, blank=True, null=True)  # Nuevo campo
 
     def __str__(self):
-        txt = "N° {0} - Stock: {1} - nombre: {2}"
-        return txt.format(self.sku,self.stock, self.nombre)
-
-
-
-
-class Envio(models.Model):
-    rut = models.IntegerField(primary_key=True)
-    nombre_envio = models.CharField(max_length=50)
-    correo = models.IntegerField()
-    telefono = models.IntegerField()
-    direccion = models.CharField(max_length=200)
-
-    def __str__(self):
-        txt = "Rut: {0} - Nombre: {1} "
-        return txt.format(self.rut,self.nombre_envio)    
-    
-#-----------------------------------
-
-
-    
+        return "N° {0} - Stock: {1} - nombre: {2}".format(self.sku, self.stock, self.nombre)

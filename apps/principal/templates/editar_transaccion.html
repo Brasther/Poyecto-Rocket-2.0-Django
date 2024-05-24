@@ -1,0 +1,95 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/principal.css' %}">                               
+    <title>Editar Transacción</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="text-center mb-4">Editar Transacción</h1>
+            <form method="post" action="{% url 'editar_transaccion' transaccion_id=transaccion.ID %}">
+                {% csrf_token %}
+                <!-- Datos del remitente -->
+                <div class="mb-3">
+                    {{ form.ID.label_tag }}
+                    {{ form.ID }}
+                </div>
+                <div class="mb-3">
+                    {{ form.nombre_remitente.label_tag }}
+                    {{ form.nombre_remitente }}
+                </div>
+                <div class="mb-3">
+                    {{ form.rut_remitente.label_tag }}
+                    {{ form.rut_remitente }}
+                </div>
+                <div class="mb-3">
+                    {{ form.direccion_remitente.label_tag }}
+                    {{ form.direccion_remitente }}
+                </div>
+                <div class="mb-3">
+                    {{ form.email_remitente.label_tag }}
+                    {{ form.email_remitente }}
+                </div>
+                <div class="mb-3">
+                    {{ form.telefono_remitente.label_tag }}
+                    {{ form.telefono_remitente }}
+                </div>
+                <!-- Datos del destinatario -->
+                <div class="mb-3">
+                    {{ form.nombre_destinatario.label_tag }}
+                    {{ form.nombre_destinatario }}
+                </div>
+                <div class="mb-3">
+                    {{ form.rut_destinatario.label_tag }}
+                    {{ form.rut_destinatario }}
+                </div>
+                <div class="mb-3">
+                    {{ form.direccion_destinatario.label_tag }}
+                    {{ form.direccion_destinatario }}
+                </div>
+                <div class="mb-3">
+                    {{ form.email_destinatario.label_tag }}
+                    {{ form.email_destinatario }}
+                </div>
+                <div class="mb-3">
+                    {{ form.telefono_destinatario.label_tag }}
+                    {{ form.telefono_destinatario }}
+                </div>
+                <!-- Datos del envío -->
+                <div class="mb-3">
+                    {{ form.tipo_paquete.label_tag }}
+                    {{ form.tipo_paquete }}
+                </div>
+                <div class="mb-3">
+                    {{ form.tipo_envio.label_tag }}
+                    {{ form.tipo_envio }}
+                </div>
+                <div class="mb-3 form-check">
+                    {{ form.pagado.label_tag }}
+                    {{ form.pagado }}
+                </div>
+                <div class="mb-3 form-check">
+                    {{ form.por_pagar.label_tag }}
+                    {{ form.por_pagar }}
+                </div>
+                <div class="mb-3">
+                    {{ form.costo_total.label_tag }}
+                    {{ form.costo_total }}
+                </div>
+
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.js' %}"></script>   
+{% endblock %}

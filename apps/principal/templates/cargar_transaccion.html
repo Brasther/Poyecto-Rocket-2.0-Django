@@ -1,0 +1,62 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+            <link rel="stylesheet" href="{% static 'css/'%}"> 
+{% endblock %}
+
+{% block body %}
+
+<div id="transacciones">
+    <h3>Transacciones Guardadas</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Remitente</th>
+                <th>Destinatario</th>
+                <th>Tipo de Paquete</th>
+                <th>Tipo de Envío</th>
+                <th>Costo Total</th>
+                <th>Pagado</th>
+                <th>Por Pagar</th>
+                <th>Acciones</th> 
+                <th>Acciones</th> 
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaccion in transacciones %}
+                <tr>
+                    <td>{{ transaccion.ID }}</td> 
+                    <td>{{ transaccion.nombre_remitente }}</td>
+                    <td>{{ transaccion.nombre_destinatario }}</td>
+                    <td>{{ transaccion.get_tipo_paquete_display }}</td>
+                    <td>{{ transaccion.get_tipo_envio_display }}</td>
+                    <td>{{ transaccion.costo_total }}</td>
+                    <td>{{ transaccion.pagado }}</td>
+                    <td>{{ transaccion.por_pagar }}</td>
+                    <td>
+                        <a href="{% url 'editar_transaccion' transaccion_id=transaccion.ID %}">Editar Transacción</a>
+                        
+                    </td> 
+                    <td><form method="post" action="{% url 'eliminar_transaccion' transaccion_id=transaccion.ID %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta transacción?');">Eliminar</button>
+                    </form></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.js' %}"></script>
+    <script src="{% static 'js/formulario.js' %}"></script>
+{% endblock %}

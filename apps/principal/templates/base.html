@@ -17,42 +17,43 @@
 <body>
     <!-- nadvar -->
     <header class="navbar1 p-2 bg-dark text-white">
-        <!-- texto derecha -->
-        <div class="container ">
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                </a>                       
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="/" class="nav-link px-2 text-white">Rocket Tracking</a></li>
-                    {% if user.is_staff %}
-                        <!-- pestaña excusivamente admin -->
-                    {% endif %}
-                    <li><a href="clima" class="nav-link px-2 text-white">Clima</a></li>
-                    <li><a href="formulario" class="nav-link px-2 text-white">For</a></li>
+        <!-- Ícono del clima en la barra de navegación -->
+        <div class="container d-flex align-items-center justify-content-between">
+                    
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/" class="nav-link px-2 text-white">Rocket Tracking</a></li>
+                {% if user.is_staff %}
+                    <!-- Pestaña exclusivamente para el administrador -->
+                    <li><a href="admin/" class="nav-link px-2 text-white">admin</a></li>
+                    <li><a href="cargarTransaccion/" class="nav-link px-2 text-white">datos</a></li>
+                {% endif %}
+                <!-- <li><a href="cargarTransaccion/" class="nav-link px-2 text-white">datos2</a></li> -->
 
-                    
+                <!-- <li><a href="clima" class="nav-link px-2 text-white">Clima</a></li> -->
+                <li><a href="formulario" class="nav-link px-2 text-white">Formulario</a></li>
+                
 
-                </ul>     
-                <!-- Texto izquierda -->
-                <div class="text-end d-flex mt-2">
-                    
-                    
-                      {% if user.is_authenticated %}
-                    <h4 class="userview me-2" style=" font-weight: bold; color: #ffffff;">
-                        {{ request.user.username }}</h4>
-                        <a href="cerrarSesion">
-                            <button type="button"  class="btn btn-danger me-2">Cerrar session</button>
-                        </a>
-                    {% else %}
-                        <a href="iniciarSesion">
-                            <button type="button"  class="btn btn-outline-light me-2">Iniciar session</button>
-                        </a>
-                        <a href="registrarse">
-                            <button type="button" class="btn btn-success me-2">Registrarse</button>
-                        </a>
-                        
-                    {% endif %}                                                  
-                </div>
+            </ul>     
+            <div class="text-end d-flex mt-2">
+                {% if user.is_authenticated %}
+                    <h4 class="userview me-2" style="font-weight: bold; color: #ffffff;">{{ request.user.username }}</h4>
+                    <a href="cerrarSesion">
+                        <button type="button"  class="btn btn-danger me-2">Cerrar sesión</button>
+                    </a>
+                {% else %}
+                    <a href="iniciarSesion">
+                        <button type="button"  class="btn btn-outline-light me-2">Iniciar sesión</button>
+                    </a>
+                    <a href="registrarse">
+                        <button type="button" class="btn btn-success me-2">Registrarse</button>
+                    </a>
+                {% endif %}
+                <a href="#" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none" id="weather-icon">
+                    <!-- Aquí puedes colocar un ícono de Font Awesome para el clima -->
+                    <i class="fas fa-sun"></i>
+                </a> 
+                <div class="result"></div>
+
             </div>
         </div>             
     </header>
@@ -62,57 +63,83 @@
     {% endblock %}
     
     <!-- footer -->
-    <footer class="footer mt-auto" style="background-color: orange;">
+    <footer class="footer">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-4">
                     <p class="text-center mb-0">
-                        <a href="#" class="footer-link" style="color: white;">Empresa de Envíos</a>
+                        <a href="#" class="footer-link">Empresa de Envíos</a>
                     </p>
                 </div>
                 <div class="col-md-4">
                     <p class="text-center mb-0">
-                        <a href="#" class="footer-link" style="color: white;">+56 9 12345678</a>
+                        <a href="#" class="footer-link">+56 9 12345678</a>
                     </p>
                 </div>
                 <div class="col-md-4">
                     <p class="text-center mb-0">
-                        <a href="mailto:info@tiendapoleras.cl" class="footer-link" style="color: white;">info@RocketTracking.cl</a>
+                        <a href="mailto:info@tiendapoleras.cl" class="footer-link">info@RocketTracking.cl</a>
                     </p>
                 </div>
                 <div class="col-md-12 mt-3">
-                    <p class="text-center mb-0" style="color: white;">
+                    <p class="text-center mb-0">
                         Síguenos en redes sociales:
                     </p>
                     <div class="social-links text-center mt-2">
-                        <a href="#" class="text-decoration-none me-2" style="color: white;">
+                        <a href="#" class="text-decoration-none me-2 footer-link">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="#" class="text-decoration-none me-2" style="color: white;">
+                        <a href="#" class="text-decoration-none me-2 footer-link">
                             <i class="fab fa-twitter"></i>
                         </a>
-                        <a href="#" class="text-decoration-none me-2" style="color: white;">
+                        <a href="#" class="text-decoration-none me-2 footer-link">
                             <i class="fab fa-instagram"></i>
                         </a>
                     </div>
                 </div>
                 <div class="col-md-12 mt-3">
                     <p class="text-center mb-0">
-                        <!-- <a href="quienesSomos.html" class="footer-link" style="color: white;">Quiénes somos</a> | -->
-                        <a href="quienesSomos" class="footer-link" style="color: white;">Quiénes somos</a> |
-
-                        <a href="#" class="footer-link" style="color: white;">Términos y condiciones</a> |
-                        <a href="#" class="footer-link" style="color: white;">Powered by</a>
+                        <a href="quienesSomos" class="footer-link">Quiénes somos</a> |
+                        <a href="terminosYcon" class="footer-link">Términos y condiciones</a> |
+                        <a href="poweredby" class="footer-link">Powered by</a>
                     </p>
                 </div>
                 <div class="col-md-12 mt-3">
-                    <p class="text-center mb-0" style="color: white;">
+                    <p class="text-center mb-0">
                         &copy; 2024 Rocket Tracking
                     </p>
                 </div>
             </div>
         </div>
     </footer>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .wrapper {
+            flex-grow: 1;
+        }
+        .footer {
+            background-color: orange;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+        }
+        .footer .footer-link {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
     {% block footer %}
             
     {% endblock %}
@@ -120,7 +147,68 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+
+
+    <script>
+        
+        const weatherIcon = document.getElementById('weather-icon');
+        const result = document.querySelector('.result');
+
+       
+
+        const cityName = 'Santiago'; // Nombre de la ciudad para la que se desea obtener el clima
+
+        weatherIcon.addEventListener('click', () => {
+            // Hacer una solicitud a la API de clima para Santiago
+            const apiId = '788adc402a20932994f90cb4238806d0';
+            const url = `http://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiId}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Mostrar el clima al lado del botón
+                    showWeather(data);
+                })
+                .catch(error => console.log(error));
+        });
+
+        function showWeather(data) {
+            const { name, main: { temp }, weather: [arr] } = data;
+
+            const grados = kelvinToCentigrade(temp);
+            
+            
+
+            const content = document.createElement('div');
+            content.innerHTML = `
+                
+                
+                <h2>${grados}°C</h2>
+                
+               
+            `;
+            result.innerHTML = ''; // Limpiar el contenido anterior
+            result.appendChild(content);
+        }
+
+        function kelvinToCentigrade(temp) {
+            return parseInt(temp - 273.15);
+        }
+    </script>
+
+
+
+
+
+
+
     {% block script %}
+
+    
+
+
 
     {% endblock %}
 </body>
