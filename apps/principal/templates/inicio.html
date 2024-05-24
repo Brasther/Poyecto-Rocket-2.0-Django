@@ -33,22 +33,111 @@
 
  
 
-<div class="container mt-3">
-<form>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <label for="numero-seguimiento" class="correos-label">Número de seguimiento:</label>
-            <div class="input-group mb-3">
-                <input type="text" id="numero-seguimiento" class="form-control" placeholder="Ejemplo: ABC123" aria-label="Número de seguimiento" aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Buscar</button>
+
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        padding: 20px;
+    }
+    .correos-label {
+        font-weight: bold;
+    }
+    .result-card {
+        margin-top: 20px;
+    }
+    .result-card h3 {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+    }
+    .result-card p {
+        margin: 0;
+        padding: 10px;
+        background-color: white;
+        border-bottom: 1px solid #ddd;
+    }
+    .result-card p:last-child {
+        border-bottom: 0;
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("button-addon2").addEventListener("click", function() {
+            var numeroSeguimiento = document.getElementById("numero-seguimiento").value;
+            if(numeroSeguimiento) {
+                buscarDatosSeguimiento(numeroSeguimiento);
+            } else {
+                alert("Por favor, ingrese un número de seguimiento.");
+            }
+        });
+    });
+
+    function buscarDatosSeguimiento(id) {
+        $.ajax({
+            url: '/buscar-transaccion/',
+            data: {
+                'numero_seguimiento': id
+            },
+            dataType: 'json',
+            success: function(data) {
+                if(data.error) {
+                    mostrarError(data.error);
+                } else {
+                    mostrarDatos(data);
+                }
+            },
+            error: function(xhr, status, error) {
+                mostrarError("Ocurrió un error: " + error);
+            }
+        });
+    }
+
+    function mostrarDatos(datos) {
+        var resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = `
+            <div class="card result-card">
+                <h3>Detalles del Envío</h3>
+                <p><strong>ID:</strong> ${datos.ID}</p>
+                <p><strong>Nombre Remitente:</strong> ${datos.nombre_remitente}</p>
+                <p><strong>Dirección Remitente:</strong> ${datos.direccion_remitente}</p>
+                <p><strong>Nombre Destinatario:</strong> ${datos.nombre_destinatario}</p>
+                <p><strong>Dirección Destinatario:</strong> ${datos.direccion_destinatario}</p>
+                <p><strong>Tipo de Paquete:</strong> ${datos.tipo_paquete}</p>
+                <p><strong>Tipo de Envío:</strong> ${datos.tipo_envio}</p>
+                <p><strong>Pagado:</strong> ${datos.pagado ? 'Sí' : 'No'}</p>
+                <p><strong>Por Pagar:</strong> ${datos.por_pagar ? 'Sí' : 'No'}</p>
+                <p><strong>Costo Total:$</strong>${datos.costo_total}</p>
+            </div>
+        `;
+    }
+
+    function mostrarError(mensaje) {
+        var resultadoDiv = document.getElementById("resultado");
+        resultadoDiv.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                ${mensaje}
+            </div>
+        `;
+    }
+</script>
+<div class="container">
+    <form>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <label for="numero-seguimiento" class="correos-label">Número de seguimiento:</label>
+                <div class="input-group mb-3">
+                    <input type="text" id="numero-seguimiento" class="form-control" placeholder="Ejemplo: ABC123" aria-label="Número de seguimiento" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Buscar</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+    <div id="resultado" class="row justify-content-center mt-3"></div>
 </div>
-
-
-
 
 
 

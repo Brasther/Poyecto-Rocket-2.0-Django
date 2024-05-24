@@ -243,7 +243,29 @@ def iniciar_transaccion(request):
     return render(request, 'formulario.html', {'transacciones': transacciones})
 
 #------------------------------------------------------------------------------------------#
+from django.http import JsonResponse
 
+def buscar_transaccion(request):
+    numero_seguimiento = request.GET.get('numero_seguimiento')
+    if numero_seguimiento:
+        try:
+            transaccion = Transaccion.objects.get(ID=numero_seguimiento)
+            datos = {
+                'ID': transaccion.ID,
+                'nombre_remitente': transaccion.nombre_remitente,
+                'direccion_remitente': transaccion.direccion_remitente,
+                'nombre_destinatario': transaccion.nombre_destinatario,
+                'direccion_destinatario': transaccion.direccion_destinatario,
+                'tipo_paquete': transaccion.get_tipo_paquete_display(),
+                'tipo_envio': transaccion.get_tipo_envio_display(),
+                'pagado': transaccion.pagado,
+                'por_pagar': transaccion.por_pagar,
+                'costo_total': int(transaccion.costo_total),  # Convertir a entero
+            }
+            return JsonResponse(datos)
+        except Transaccion.DoesNotExist:
+            return JsonResponse({'error': 'No se encontró la transacción.'}, status=404)
+    return JsonResponse({'error': 'Número de seguimiento no proporcionado.'}, status=400)
 '''
 def agregarProducto(request):
     if request.method == 'POST':

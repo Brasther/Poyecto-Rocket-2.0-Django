@@ -27,6 +27,8 @@ urlpatterns = [
     path('cargarTransaccion/', views.cargarTransaccion, name='cargarTransaccion'),
     path('eliminar_transaccion/<int:transaccion_id>/', views.eliminar_transaccion, name='eliminar_transaccion'),
 
+    path('buscar-transaccion/', views.buscar_transaccion, name='buscar-transaccion'),
+
 
 
 
