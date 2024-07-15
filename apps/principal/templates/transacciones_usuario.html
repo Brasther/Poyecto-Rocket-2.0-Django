@@ -1,0 +1,58 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block head %}
+            <link rel="stylesheet" href="{% static 'css/'%}"> 
+{% endblock %}
+
+{% block body %}
+
+<div id="transacciones" class="container mt-5">
+    <h1 class="text-center mb-4">Mis Transacciones</h1>
+
+    {% if transacciones %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Remitente</th>
+                    <th>Destinatario</th>
+                    <th>Tipo Paquete</th>
+                    <th>Tipo Envío</th>
+                    <th>Costo Total</th>
+                    <th>Pagado</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaccion in transacciones %}
+                    <tr>
+                        <td>{{ transaccion.ID }}</td>
+                        <td>{{ transaccion.session_id }}</td>
+                        <td>{{ transaccion.nombre_remitente }}</td>
+                        <td>{{ transaccion.nombre_destinatario }}</td>
+                        <td>{{ transaccion.get_tipo_paquete_display }}</td>
+                        <td>{{ transaccion.get_tipo_envio_display }}</td>
+                        <td>{{ transaccion.costo_total }}</td>
+                        <td>{{ transaccion.pagado|yesno:"Sí,No" }}</td>
+                        <td>{{ transaccion.estado_envio }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-center">No tienes transacciones.</p>
+    {% endif %}
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'js/jquery/jquery.js' %}"></script>
+    <script src="{% static 'js/formulario.js' %}"></script>
+{% endblock %}

@@ -25,14 +25,17 @@
                 {% if user.is_staff %}
                     <!-- Pestaña exclusivamente para el administrador -->
                     <li><a href="admin/" class="nav-link px-2 text-white">admin</a></li>
-                    <li><a href="cargarTransaccion/" class="nav-link px-2 text-white">datos</a></li>
+                    <li><a href="cargarTransaccion" class="nav-link px-2 text-white">datos</a></li>
                 {% endif %}
                 <!-- <li><a href="cargarTransaccion/" class="nav-link px-2 text-white">datos2</a></li> -->
 
                 <!-- <li><a href="clima" class="nav-link px-2 text-white">Clima</a></li> -->
                 <li><a href="formulario" class="nav-link px-2 text-white">Formulario</a></li>
                 
-
+                <li><a href="mis-transacciones" class="nav-link px-2 text-white">mis transaccion</a></li>
+                {% if user.username == 'Currier' %}
+                <li><a href="{% url 'currier_cargar_transaccion' %}" class="nav-link px-2 text-white">Currier's Dashboard</a></li>
+                {% endif %}
             </ul>     
             <div class="text-end d-flex mt-2">
                 {% if user.is_authenticated %}

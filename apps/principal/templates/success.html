@@ -1,19 +1,5 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Transacción Exitosa</title>
-</head>
-<body>
-    <h1>Transacción Exitosa</h1>
-    <p>La transacción se ha completado exitosamente.</p>
-    <p>Detalles:</p>
-    <ul>
-        <li>Orden de Compra: {{ response.buy_order }}</li>
-        <li>Monto: {{ response.amount }}</li>
-        <li>Fecha: {{ response.transaction_date }}</li>
-    </ul>
-</body>
-</html> -->
+{% extends "./base.html" %}
+
 
 {% load static %}
 
@@ -22,15 +8,23 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Transacción Exitosa</h1>
-    <p>La transacción se ha completado exitosamente.</p>
-    <p>Detalles:</p>
-    <ul>
-        <li>Orden de Compra: {{ response.buy_order }}</li>
-        <li>Monto: {{ response.amount }}</li>
-        <li>Fecha: {{ response.transaction_date }}</li>
-        <li>ID de Transacción: {{ transaccion.ID }}</li> 
-    </ul>
+<div class="transaction-details">
+    <h1 style="text-align: center; margin-bottom: 20px;">Transacción Exitosa</h1>
+    <p style="text-align: center;">La transacción se ha completado exitosamente.</p>
+    
+    <div style="max-width: 600px; margin: 0 auto;"> <!-- Centrar y limitar el ancho del contenido -->
+        <h2 style="text-align:  margin-top 30px; margin-bottom: 10px;">Detalles:</h2>
+        <ul style="list-style-type: none; padding: 0; text-align: left;">
+            <li style="margin-bottom: 10px;"><strong>Orden de Compra:</strong> {{ response.buy_order }}</li>
+            <li style="margin-bottom: 10px;"><strong>Monto:</strong> {{ response.amount }}</li>
+            <li style="margin-bottom: 10px;"><strong>Fecha:</strong> {{ response.transaction_date }}</li>
+            <li style="margin-bottom: 10px;"><strong>ID de Transacción:</strong> {{ transaccion.ID }}</li>
+        </ul>
+    </div>
+</div>
+
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>br
 {% endblock %}
 
 {% block script %}

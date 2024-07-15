@@ -13,6 +13,11 @@
             <h1 class="text-center mb-4">Editar Transacción</h1>
             <form method="post" action="{% url 'editar_transaccion' transaccion_id=transaccion.ID %}">
                 {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.session_id.label_tag }}
+                    {{ form.session_id }}
+                </div>
                 <!-- Datos del remitente -->
                 <div class="mb-3">
                     {{ form.ID.label_tag }}
@@ -33,6 +38,9 @@
                 <div class="mb-3">
                     {{ form.email_remitente.label_tag }}
                     {{ form.email_remitente }}
+                    {% for error in form.email_remitente.errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <div class="mb-3">
                     {{ form.telefono_remitente.label_tag }}
@@ -54,6 +62,9 @@
                 <div class="mb-3">
                     {{ form.email_destinatario.label_tag }}
                     {{ form.email_destinatario }}
+                    {% for error in form.email_destinatario.errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <div class="mb-3">
                     {{ form.telefono_destinatario.label_tag }}
@@ -79,6 +90,10 @@
                 <div class="mb-3">
                     {{ form.costo_total.label_tag }}
                     {{ form.costo_total }}
+                </div>
+                <div class="mb-3">
+                    {{ form.estado_envio.label_tag }}
+                    {{ form.estado_envio }}
                 </div>
 
                 <button type="submit">Guardar Cambios</button>
