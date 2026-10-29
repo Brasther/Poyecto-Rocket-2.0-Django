@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Error en la Transacción</title>
-</head>
-<body>
-    <h1>Error en la Transacción</h1>
-    <p>{{ message }}</p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}No se pudo confirmar · Rocket Tracking{% endblock %}
+{% block body %}
+<section class="container py-5" style="max-width: 42rem;">
+    <div class="alert alert-warning" role="alert">
+        <h1 class="h4">No se pudo confirmar el pago</h1>
+        <p class="mb-0">{{ message }}</p>
+    </div>
+    <a class="btn btn-outline-primary" href="{% url 'mis_transacciones' %}">Volver a mis envíos</a>
+</section>
+{% endblock %}

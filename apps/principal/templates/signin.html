@@ -1,51 +1,13 @@
-{% extends "./base.html" %}
-{% load static %}
-
-{% block head %}
-    <link rel="stylesheet" href="{% static 'css/inicioSesion.css'%}"> 
-{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Iniciar sesión · Rocket Tracking{% endblock %}
 {% block body %}
-
-<body>
-<div class="login-container">
-  <h1>Iniciar Sesión</h1>
-  <form id="login-form" method="post">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="username">Usuario:</label>
-      <input type="text" id="username" name="username">
-    </div>
-    <div class="form-group">
-      <label for="password">Contraseña:</label>
-      <input type="password" id="password" name="password">
-    </div>
-    {{error}}
-    <button type="submit" class="btn btn-success mt-3">Iniciar Sesión</button>
-  </form>
-</div>
-
-
-<!--el toast -->
-<div class="position-fixed top-0 end-0 p-3">
-  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-header">
-      <strong class="me-auto">Validación</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-    </div>
-    <div class="toast-body"></div>
-  </div>
-</div>
-
-
-
-<br><br><br><br><br><br><br><br><br>
-
-</body>
-{% endblock %}
-
-{% block script %}
-    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
-    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
-    <script src="{% static 'js/jquery/jquery.js' %}"></script>
+<section class="container py-5" style="max-width: 34rem;">
+    <h1 class="h2 mb-3">Iniciar sesión</h1>
+    <p class="text-secondary">Accede para crear y consultar tus envíos.</p>
+    <form method="post" action="{% url 'signin' %}" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+    </form>
+</section>
 {% endblock %}

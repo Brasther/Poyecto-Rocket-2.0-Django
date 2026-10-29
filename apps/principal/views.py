@@ -1,293 +1,280 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.db import IntegrityError#
+import uuid
+from decimal import Decimal, InvalidOperation
 
-from django.http import JsonResponse, HttpResponseBadRequest
-from decimal import Decimal
-from .models import Transaccion
-from .forms import TransaccionForm
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpResponseBadRequest, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_GET, require_POST
 from transbank.common.integration_api_keys import IntegrationApiKeys
 from transbank.common.integration_commerce_codes import IntegrationCommerceCodes
 from transbank.common.integration_type import IntegrationType
 from transbank.common.options import WebpayOptions
+from transbank.error.transbank_error import TransbankError
 from transbank.webpay.webpay_plus.transaction import Transaction
-import random
+
+from .forms import CrearEnvioForm, REGIONES, TransaccionForm
+from .models import Transaccion
+from .pricing import calcular_costo_envio
 
 
 def obtener_transaccion_transbank():
     configuracion = settings.TRANSBANK
-    entorno = configuracion['INTEGRATION_TYPE']
-    if entorno not in {'TEST', 'LIVE'}:
-        raise ImproperlyConfigured('TRANSBANK_INTEGRATION_TYPE debe ser TEST o LIVE.')
+    entorno = configuracion["INTEGRATION_TYPE"]
+    if entorno not in {"TEST", "LIVE"}:
+        raise ImproperlyConfigured("TRANSBANK_INTEGRATION_TYPE debe ser TEST o LIVE.")
 
-    if entorno == 'TEST':
-        codigo_comercio = configuracion['COMMERCE_CODE'] or IntegrationCommerceCodes.WEBPAY_PLUS
-        api_key = configuracion['API_KEY'] or IntegrationApiKeys.WEBPAY
+    if entorno == "TEST":
+        codigo_comercio = configuracion["COMMERCE_CODE"] or IntegrationCommerceCodes.WEBPAY_PLUS
+        api_key = configuracion["API_KEY"] or IntegrationApiKeys.WEBPAY
     else:
-        codigo_comercio = configuracion['COMMERCE_CODE']
-        api_key = configuracion['API_KEY']
+        codigo_comercio = configuracion["COMMERCE_CODE"]
+        api_key = configuracion["API_KEY"]
         if not codigo_comercio or not api_key:
             raise ImproperlyConfigured(
-                'Define TRANSBANK_COMMERCE_CODE y TRANSBANK_API_KEY para usar el entorno LIVE.'
+                "Define TRANSBANK_COMMERCE_CODE y TRANSBANK_API_KEY para usar el entorno LIVE."
             )
 
     opciones = WebpayOptions(codigo_comercio, api_key, IntegrationType[entorno])
     return Transaction(opciones)
 
+
 def cargarInicio(request):
     return render(request, "inicio.html")
+
 
 def cargarQuienesSomos(request):
     return render(request, "quienesSomos.html")
 
+
 def cargarPoweredBy(request):
     return render(request, "poweredby.html")
+
 
 def cargarTerminosYcondiciones(request):
     return render(request, "terminosYcon.html")
 
+
 def signup(request):
-    if request.method == 'GET':
-        return render(request, 'signup.html', {"form": UserCreationForm})
-    else:
-        if request.POST["password1"] == request.POST["password2"]:
-            try:
-                user = User.objects.create_user(
-                    request.POST["username"], password=request.POST["password1"])
-                user.save() #guarda el user en la base
-                login(request, user) #cookies
-                return redirect('home')
-            except IntegrityError:
-                return render(request, 'signup.html', {"form": UserCreationForm, "error": "Usuario Ya existente."})
-        return render(request, 'signup.html', {"form": UserCreationForm, "error": "Las Contraseñas no coninciden."})
-
-def home(request):
-    return render(request, 'home.html')
-
-
-@login_required
-def signout(request):
-    logout(request)
-    return redirect('home')
+    form = UserCreationForm(request.POST or None)
+    for field in form.fields.values():
+        field.widget.attrs["class"] = "form-control"
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        login(request, user)
+        messages.success(request, "Tu cuenta quedó creada.")
+        return redirect("home")
+    return render(request, "signup.html", {"form": form})
 
 
 def signin(request):
-    if request.method == 'GET':
-        return render(request, 'signin.html', {"form": AuthenticationForm})
-    else:
-        user = authenticate(
-            request, username=request.POST['username'], password=request.POST['password'])
-        if user is None:
-            return render(request, 'signin.html', {"form": AuthenticationForm, "error": "Usuario o Contraseña incorrecto."})
-        login(request, user)
-        return redirect('home')
+    form = AuthenticationForm(request, data=request.POST or None)
+    for field in form.fields.values():
+        field.widget.attrs["class"] = "form-control"
+    if request.method == "POST" and form.is_valid():
+        login(request, form.get_user())
+        return redirect("home")
+    return render(request, "signin.html", {"form": form})
 
 
+@login_required
+@require_POST
+def signout(request):
+    logout(request)
+    return redirect("home")
 
 
-from django import forms
-
-class TransaccionForm(forms.ModelForm):
-    class Meta:
-        model = Transaccion
-        fields = '__all__'
-
-    def clean_email_destinatario(self):
-        email_destinatario = self.cleaned_data.get('email_destinatario')
-        if email_destinatario and '@' not in email_destinatario:
-            raise forms.ValidationError("Ingrese un email válido.")
-        return email_destinatario
-#------------------------------------------------------------------------------------------------------------------------------------------
-def home(request):
-    return render(request, 'home.html')
-
-
+@login_required
 def formulario(request):
-    transacciones = Transaccion.objects.all()
-    return render(request, 'formulario.html', {'transacciones': transacciones})
+    return render(request, "formulario.html", {"form": CrearEnvioForm()})
 
 
+@permission_required("principal.view_transaccion", raise_exception=True)
 def cargarTransaccion(request):
-    transacciones = Transaccion.objects.all()
-    return render(request, "cargar_transaccion.html", {'transacciones': transacciones})
+    transacciones = Transaccion.objects.order_by("-ID")
+    return render(request, "cargar_transaccion.html", {"transacciones": transacciones})
 
-from django.http import HttpResponse
-def editar_estado_envio(request, transaccion_id):
-    if request.method == 'POST':
-        nuevo_estado = request.POST.get('estado_envio')
-        transaccion = Transaccion.objects.get(ID=transaccion_id)
-        transaccion.estado_envio = nuevo_estado
-        transaccion.save()
-        return redirect('cargarTransaccion') 
-    else:
-        return HttpResponse("Método no permitido")
+
+def _envios_editables_por(request):
+    if request.user.has_perm("principal.change_transaccion"):
+        return Transaccion.objects.all()
+    return Transaccion.objects.filter(propietario=request.user)
 
 
 @login_required
 def editar_transaccion(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, ID=transaccion_id)
-    if request.method == 'POST':
-        form = TransaccionForm(request.POST, instance=transaccion)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Transacción modificada correctamente.')
-            return redirect('cargarTransaccion')  
-        else:
-            messages.error(request, 'Hubo un error al procesar el formulario.')
-            print(form.errors)
-    else:
-        form = TransaccionForm(instance=transaccion)
-    return render(request, 'editar_transaccion.html', {'form': form, 'transaccion': transaccion})
+    transaccion = get_object_or_404(_envios_editables_por(request), ID=transaccion_id)
+    if transaccion.pagado and not request.user.has_perm("principal.change_transaccion"):
+        messages.error(request, "No se puede editar un envío que ya tiene un pago confirmado.")
+        return redirect("mis_transacciones")
+
+    form = TransaccionForm(request.POST or None, instance=transaccion)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Los datos del envío se actualizaron.")
+        return redirect("mis_transacciones")
+    return render(request, "editar_transaccion.html", {"form": form, "transaccion": transaccion})
+
 
 @login_required
+@require_POST
 def eliminar_transaccion(request, transaccion_id):
-    transaccion = get_object_or_404(Transaccion, ID=transaccion_id)
+    if request.user.has_perm("principal.delete_transaccion"):
+        transaccion = get_object_or_404(Transaccion, ID=transaccion_id)
+    else:
+        transaccion = get_object_or_404(
+            Transaccion, ID=transaccion_id, propietario=request.user
+        )
+        if transaccion.pagado:
+            messages.error(request, "No se puede eliminar un envío que ya tiene un pago confirmado.")
+            return redirect("mis_transacciones")
+
     transaccion.delete()
-    messages.success(request, 'Transacción eliminada correctamente.')
-    return redirect('cargarTransaccion')
+    messages.success(request, "El envío se eliminó.")
+    return redirect("mis_transacciones")
 
 
-def generar_ID():
-    while True:
-        ID = ''.join(random.choices('0123456789', k=6))
-        if not Transaccion.objects.filter(ID=ID).exists():
-            return ID
+@permission_required("principal.change_transaccion", raise_exception=True)
+@require_POST
+def editar_estado_envio(request, transaccion_id):
+    nuevo_estado = request.POST.get("estado_envio")
+    estados_validos = {valor for valor, _ in Transaccion.ESTADO_ENVIO_CHOICES}
+    if nuevo_estado not in estados_validos:
+        return HttpResponseBadRequest("El estado indicado no es válido.")
+
+    transaccion = get_object_or_404(Transaccion, ID=transaccion_id)
+    transaccion.estado_envio = nuevo_estado
+    transaccion.save(update_fields=["estado_envio"])
+    messages.success(request, "El estado del envío se actualizó.")
+    return redirect("cargarTransaccion")
+
 
 @login_required
+@require_POST
 def iniciar_transaccion(request):
-    if request.method == 'POST':
-        nombre_remitente = request.POST.get('nombreRemitente')
-        rut_remitente = request.POST.get('rutRemitente')
-        direccion_remitente = request.POST.get('direccionRemitente')
-        email_remitente = request.POST.get('Email', '')
-        telefono_remitente = request.POST.get('telefonoRemitente', '')
+    form = CrearEnvioForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Revisa los datos del formulario e inténtalo de nuevo.")
+        return render(request, "formulario.html", {"form": form})
 
-        nombre_destinatario = request.POST.get('nombreDestinatario')
-        rut_destinatario = request.POST.get('rutDestinatario')
-        direccion_destinatario = request.POST.get('direccionDestinatario')
-        email_destinatario = request.POST.get('emailDestinatario', '')
-        telefono_destinatario = request.POST.get('telefonoDestinatario', '')
+    datos = form.cleaned_data
+    try:
+        costo_total = calcular_costo_envio(
+            datos["tipoPaquete"], datos["region"], datos["tipoEnvio"]
+        )
+    except ValueError as error:
+        form.add_error(None, str(error))
+        return render(request, "formulario.html", {"form": form})
 
-        tipo_paquete = request.POST.get('tipoPaquete')
-        tipo_envio = request.POST.get('tipoEnvio')
-        pagado = 'pagado' in request.POST
-        por_pagar = 'porPagar' in request.POST
-        costo_total = request.POST.get('totalAmount', '0.0')
-        if costo_total == '':
-            costo_total = '0.0'
-        costo_total = Decimal(costo_total)
+    nombre_region = dict(REGIONES)[datos["region"]]
+    direccion_destinatario = ", ".join(
+        (datos["direccionDestinatario"], datos["comuna"], nombre_region, "Chile")
+    )
+    buy_order = uuid.uuid4().hex[:26]
+    transaccion = Transaccion.objects.create(
+        nombre_remitente=datos["nombreRemitente"],
+        rut_remitente=datos["rutRemitente"],
+        direccion_remitente=datos["direccionRemitente"],
+        email_remitente=datos["Email"] or None,
+        telefono_remitente=datos["telefonoRemitente"] or None,
+        nombre_destinatario=datos["nombreDestinatario"],
+        rut_destinatario=datos["rutDestinatario"],
+        direccion_destinatario=direccion_destinatario,
+        email_destinatario=datos["emailDestinatario"] or None,
+        telefono_destinatario=datos["telefonoDestinatario"] or None,
+        tipo_paquete=datos["tipoPaquete"],
+        tipo_envio=datos["tipoEnvio"],
+        pagado=False,
+        costo_total=costo_total,
+        propietario=request.user,
+        buy_order=buy_order,
+    )
 
-        session_id = request.user.username
-        buy_order = f'ordenCompra-{session_id}{Transaccion.objects.count()}'
+    return_url = request.build_absolute_uri("/transbank/completar-transaccion/")
+    try:
+        respuesta = obtener_transaccion_transbank().create(
+            buy_order, str(request.user.pk), int(costo_total), return_url
+        )
+    except TransbankError:
+        messages.error(request, "No se pudo iniciar el pago de prueba. Puedes conservar este envío y volver a intentarlo más tarde.")
+        return redirect("mis_transacciones")
 
-        ID = generar_ID()
+    if respuesta.get("token") and respuesta.get("url"):
+        return redirect(f"{respuesta['url']}?token_ws={respuesta['token']}")
 
-        transaccion = Transaccion.objects.create(
-            ID=ID,
-            nombre_remitente=nombre_remitente,
-            rut_remitente=rut_remitente,
-            direccion_remitente=direccion_remitente,
-            email_remitente=email_remitente,
-            telefono_remitente=telefono_remitente,
-            nombre_destinatario=nombre_destinatario,
-            rut_destinatario=rut_destinatario,
-            direccion_destinatario=direccion_destinatario,
-            email_destinatario=email_destinatario,
-            telefono_destinatario=telefono_destinatario,
-            tipo_paquete=tipo_paquete,
-            tipo_envio=tipo_envio,
-            pagado=pagado,
-            por_pagar=por_pagar,
-            costo_total=costo_total,
-            session_id=session_id,
-            buy_order=buy_order
+    messages.error(request, "Transbank no devolvió una sesión de pago válida.")
+    return redirect("mis_transacciones")
+
+
+@require_GET
+def completar_transaccion(request):
+    token_ws = request.GET.get("token_ws")
+    if not token_ws:
+        return render(request, "error.html", {"message": "No se recibió el token de pago."})
+
+    try:
+        respuesta = obtener_transaccion_transbank().commit(token_ws)
+    except TransbankError:
+        return render(request, "error.html", {"message": "No fue posible confirmar el pago."})
+
+    buy_order = respuesta.get("buy_order")
+    if not buy_order:
+        return render(request, "error.html", {"message": "La respuesta de pago no incluye una orden válida."})
+    transaccion = get_object_or_404(Transaccion, buy_order=buy_order)
+    try:
+        monto_autorizado = Decimal(str(respuesta.get("amount"))).quantize(Decimal("0.01"))
+    except (InvalidOperation, TypeError):
+        monto_autorizado = None
+
+    if respuesta.get("status") == "AUTHORIZED" and monto_autorizado == transaccion.costo_total:
+        transaccion.pagado = True
+        transaccion.save(update_fields=["pagado"])
+        return render(
+            request,
+            "success.html",
+            {
+                "transaccion": transaccion,
+                "modo_prueba": settings.TRANSBANK["INTEGRATION_TYPE"] == "TEST",
+            },
         )
 
-        transaccion.save()
-
-        amount = str(costo_total)
-        return_url = request.build_absolute_uri('/transbank/completar-transaccion/')
-        response = obtener_transaccion_transbank().create(buy_order, session_id, amount, return_url)
-
-        if 'token' in response and 'url' in response:
-            return redirect(response['url'] + '?token_ws=' + response['token'])
-        else:
-            return render(request, 'error.html', {'message': 'Error al iniciar la transacción.'})
-
-    transacciones = Transaccion.objects.all()
-    return render(request, 'formulario.html', {'transacciones': transacciones})
+    return render(request, "error.html", {"message": "El pago no fue autorizado o el monto no coincide."})
 
 
+@login_required
 def transacciones_usuario(request):
-    username = request.user.username
-    transacciones = Transaccion.objects.filter(session_id=username)
-    return render(request, 'transacciones_usuario.html', {'transacciones': transacciones})
+    transacciones = Transaccion.objects.filter(propietario=request.user).order_by("-ID")
+    return render(request, "transacciones_usuario.html", {"transacciones": transacciones})
 
 
-
+@require_GET
 def buscar_transaccion(request):
-    numero_seguimiento = request.GET.get('numero_seguimiento')
-    if numero_seguimiento:
-        try:
-            transaccion = Transaccion.objects.get(ID=numero_seguimiento)
-            datos = {
-                'ID': transaccion.ID,
-                'nombre_remitente': transaccion.nombre_remitente,
-                'direccion_remitente': transaccion.direccion_remitente,
-                'nombre_destinatario': transaccion.nombre_destinatario,
-                'direccion_destinatario': transaccion.direccion_destinatario,
-                'tipo_paquete': transaccion.get_tipo_paquete_display(),
-                'tipo_envio': transaccion.get_tipo_envio_display(),
-                'pagado': transaccion.pagado,
-                'por_pagar': transaccion.por_pagar,
-                'costo_total': float(transaccion.costo_total),  # Convertir a float si es decimal
-            }
-            return JsonResponse(datos)
-        except Transaccion.DoesNotExist:
-            return JsonResponse({'error': 'No se encontró la transacción.'}, status=404)
-    return JsonResponse({'error': 'Número de seguimiento no proporcionado.'}, status=400)
+    codigo = request.GET.get("numero_seguimiento", "").strip()
+    try:
+        codigo = uuid.UUID(codigo)
+    except (ValueError, TypeError, AttributeError):
+        return JsonResponse({"error": "Ingresa un código de seguimiento válido."}, status=400)
+
+    try:
+        transaccion = Transaccion.objects.get(codigo_seguimiento=codigo)
+    except Transaccion.DoesNotExist:
+        return JsonResponse({"error": "No se encontró el envío."}, status=404)
+
+    return JsonResponse(
+        {
+            "codigo_seguimiento": str(transaccion.codigo_seguimiento),
+            "estado_envio": transaccion.get_estado_envio_display(),
+            "tipo_paquete": transaccion.get_tipo_paquete_display(),
+            "tipo_envio": transaccion.get_tipo_envio_display(),
+        }
+    )
 
 
-
-
-
-
-
-
-
-
-
-#-------------
-@login_required
-def completar_transaccion(request):
-    token_ws = request.GET.get('token_ws')
-    if not token_ws:
-        return render(request, 'error.html', {'message': 'No se recibió el token_ws.'})
-
-    response = obtener_transaccion_transbank().commit(token_ws)
-    if response['status'] == 'AUTHORIZED':
-        transaccion = Transaccion.objects.get(buy_order=response['buy_order'])
-        transaccion.pagado = True
-        transaccion.save()
-
-        return render(request, 'success.html', {'response': response, 'transaccion': transaccion})
-    else:
-        return render(request, 'error.html', {'message': 'La transacción no fue autorizada.'})
-    
-
-
-
-
-@login_required
+@permission_required("principal.change_transaccion", raise_exception=True)
 def currier_view(request):
-    if request.user.username != 'Currier':
-        return redirect('home')
-    
-    transacciones = Transaccion.objects.all()  # Obtiene todas las transacciones
-    return render(request, 'cargar_transaccion.html', {'transacciones': transacciones, 'read_only': True})
+    transacciones = Transaccion.objects.order_by("-ID")
+    return render(request, "cargar_transaccion.html", {"transacciones": transacciones})

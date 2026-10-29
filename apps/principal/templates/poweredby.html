@@ -1,32 +1,13 @@
-{% extends "./base.html" %}
-{% load static %}
-
-{% block head %}
-<link rel="stylesheet" href="{% static 'css/quienesSomos.css' %}">
-{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Tecnologías · Rocket Tracking{% endblock %}
 {% block body %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6">
-            <div id="texto-container">
-                <h1 class="text-center mb-4">Powered By Rocket Tech</h1>
-                <p>Somos Rocket Tech, una empresa dedicada a desarrollar soluciones tecnológicas innovadoras que transforman negocios y mejoran vidas. Con un equipo de expertos apasionados, llevamos a nuestros clientes hacia nuevas alturas de éxito. ¡Descubre el futuro con nosotros!</p>
-               
-                
-            </div>
-        </div>
-        <div class="col-md-6">
-            <img src="{% static 'imagenes/EnvioExpress.png' %}" width="200" height="350" class="d-block w-100" alt="Envío Express">
-        </div>
-    </div>
-</div>
-
-
-
-    
-{% endblock %}
-
-{% block script %}
-
+<section class="container py-5" style="max-width: 52rem;">
+    <h1 class="h2">Tecnologías del proyecto</h1>
+    <ul class="list-group mt-4">
+        <li class="list-group-item">Python y Django para la aplicación web.</li>
+        <li class="list-group-item">SQLite para el entorno local de demostración.</li>
+        <li class="list-group-item">SDK oficial de Transbank para el flujo Webpay de integración.</li>
+        <li class="list-group-item">Bootstrap, plantillas Django y JavaScript para la interfaz.</li>
+    </ul>
+</section>
 {% endblock %}

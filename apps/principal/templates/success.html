@@ -1,35 +1,15 @@
-{% extends "./base.html" %}
-
-
-{% load static %}
-
-{% block head %}
-    <link rel="stylesheet" href="{% static 'css/'%}">
-{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Pago confirmado · Rocket Tracking{% endblock %}
 {% block body %}
-<div class="transaction-details">
-    <h1 style="text-align: center; margin-bottom: 20px;">Transacción Exitosa</h1>
-    <p style="text-align: center;">La transacción se ha completado exitosamente.</p>
-    
-    <div style="max-width: 600px; margin: 0 auto;"> <!-- Centrar y limitar el ancho del contenido -->
-        <h2 style="text-align:  margin-top 30px; margin-bottom: 10px;">Detalles:</h2>
-        <ul style="list-style-type: none; padding: 0; text-align: left;">
-            <li style="margin-bottom: 10px;"><strong>Orden de Compra:</strong> {{ response.buy_order }}</li>
-            <li style="margin-bottom: 10px;"><strong>Monto:</strong> {{ response.amount }}</li>
-            <li style="margin-bottom: 10px;"><strong>Fecha:</strong> {{ response.transaction_date }}</li>
-            <li style="margin-bottom: 10px;"><strong>ID de Transacción:</strong> {{ transaccion.ID }}</li>
-        </ul>
+<section class="container py-5" style="max-width: 42rem;">
+    <div class="card border-success">
+        <div class="card-body p-4">
+            <span class="badge text-bg-success mb-3">{% if modo_prueba %}Pago confirmado en integración de prueba{% else %}Pago confirmado{% endif %}</span>
+            <h1 class="h3">El envío quedó registrado</h1>
+            <p>Guarda este código de seguimiento para consultar el estado del envío.</p>
+            <p class="p-3 bg-light rounded font-monospace text-break">{{ transaccion.codigo_seguimiento }}</p>
+            <a class="btn btn-primary" href="{% url 'mis_transacciones' %}">Ver mis envíos</a>
+        </div>
     </div>
-</div>
-
-
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>br
+</section>
 {% endblock %}
-
-{% block script %}
-    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
-    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
-    <script src="{% static 'js/jquery/jquery.js' %}"></script>
-{% endblock %}
-

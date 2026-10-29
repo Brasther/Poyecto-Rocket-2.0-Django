@@ -1,29 +1,16 @@
-{% extends "./base.html" %}
-{% load static %}
-
-{% block head %}
-<link rel="stylesheet" href="{% static 'css/quienesSomos.css' %}">
-{% endblock %}
-
+{% extends "base.html" %}
+{% block title %}Aviso de demostración · Rocket Tracking{% endblock %}
 {% block body %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6">
-            <div id="texto-container">
-                <h1 class="text-center mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae dolor hic voluptate, magni praesentium at voluptatibus error minus natus. Sint aliquid voluptatibus dolor molestias, rerum cum rem vero obcaecati itaque.</h1>
-               
-               
-                
-            </div>
-        </div>
+<section class="container py-5" style="max-width: 52rem;">
+    <h1 class="h2">Aviso de demostración</h1>
+    <div class="alert alert-warning mt-4">
+        <strong>Esta aplicación es un prototipo académico.</strong> No crea órdenes de transporte reales ni procesa pagos comerciales.
     </div>
-</div>
-
-
-
-    
-{% endblock %}
-
-{% block script %}
-
+    <h2 class="h5 mt-4">Datos de ejemplo</h2>
+    <p>Usa datos ficticios. No ingreses RUT, domicilios, teléfonos, correos ni información financiera de personas reales. Los registros que crees se guardan en la base local del entorno donde ejecutes la aplicación.</p>
+    <h2 class="h5 mt-4">Pagos</h2>
+    <p>Webpay se configura en modo de integración de prueba. No cambies el modo a producción sin revisión de seguridad, configuración de secretos y credenciales comerciales válidas.</p>
+    <h2 class="h5 mt-4">Uso del código</h2>
+    <p>El código se distribuye bajo la licencia MIT. Conserva el aviso de copyright y la licencia en las copias o partes sustanciales del software.</p>
+</section>
 {% endblock %}

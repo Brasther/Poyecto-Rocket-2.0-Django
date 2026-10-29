@@ -1,178 +1,58 @@
-{% extends "./base.html" %}
+{% extends "base.html" %}
 {% load static %}
-{% block head %}
-    <link rel="stylesheet" href="{% static 'css/principal.css'%}">                               <!--cambiar los ccs que se veab los card , carrusel-->
-    <title>Inicio</title>
-
-{% endblock %}
-
+{% block title %}Seguimiento de envíos · Rocket Tracking{% endblock %}
 {% block body %}
-    
-   <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="{% static 'imagenes/Bodega.jpg' %}" class="d-block w-100" alt="Bodega">
-        </div>
-        <div class="carousel-item">
-            <img src="{% static 'imagenes/paisajeNueva.jpg' %}" class="d-block w-100" alt="Paisaje">
-        </div>
-        <div class="carousel-item">
-            <img src="{% static 'imagenes/Van.jpg' %}" class="d-block w-100" alt="Van">
-        </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
-
-
- 
-
-
-
-<style>
-    body {
-        background-color: #f8f9fa;
-        padding: 20px;
-    }
-    .correos-label {
-        font-weight: bold;
-    }
-    .result-card {
-        margin-top: 20px;
-    }
-    .result-card h3 {
-        background-color: #007bff;
-        color: white;
-        padding: 10px;
-        border-radius: 5px 5px 0 0;
-    }
-    .result-card p {
-        margin: 0;
-        padding: 10px;
-        background-color: white;
-        border-bottom: 1px solid #ddd;
-    }
-    .result-card p:last-child {
-        border-bottom: 0;
-    }
-</style>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("button-addon2").addEventListener("click", function() {
-            var numeroSeguimiento = document.getElementById("numero-seguimiento").value;
-            if(numeroSeguimiento) {
-                buscarDatosSeguimiento(numeroSeguimiento);
-            } else {
-                alert("Por favor, ingrese un número de seguimiento.");
-            }
-        });
-    });
-
-    function buscarDatosSeguimiento(id) {
-        $.ajax({
-            url: '/buscar-transaccion/',
-            data: {
-                'numero_seguimiento': id
-            },
-            dataType: 'json',
-            success: function(data) {
-                if(data.error) {
-                    mostrarError(data.error);
-                } else {
-                    mostrarDatos(data);
-                }
-            },
-            error: function(xhr, status, error) {
-                mostrarError("Ocurrió un error: " + error);
-            }
-        });
-    }
-
-    function mostrarDatos(datos) {
-        var resultadoDiv = document.getElementById("resultado");
-        resultadoDiv.innerHTML = `
-            <div class="card result-card">
-                <h3>Detalles del Envío</h3>
-                <p><strong>ID:</strong> ${datos.ID}</p>
-                <p><strong>Nombre Remitente:</strong> ${datos.nombre_remitente}</p>
-                <p><strong>Dirección Remitente:</strong> ${datos.direccion_remitente}</p>
-                <p><strong>Nombre Destinatario:</strong> ${datos.nombre_destinatario}</p>
-                <p><strong>Dirección Destinatario:</strong> ${datos.direccion_destinatario}</p>
-                <p><strong>Tipo de Paquete:</strong> ${datos.tipo_paquete}</p>
-                <p><strong>Tipo de Envío:</strong> ${datos.tipo_envio}</p>
-                <p><strong>Pagado:</strong> ${datos.pagado ? 'Sí' : 'No'}</p>
-                <p><strong>Por Pagar:</strong> ${datos.por_pagar ? 'Sí' : 'No'}</p>
-                <p><strong>Costo Total:$</strong>${datos.costo_total}</p>
-            </div>
-        `;
-    }
-
-    function mostrarError(mensaje) {
-        var resultadoDiv = document.getElementById("resultado");
-        resultadoDiv.innerHTML = `
-            <div class="alert alert-danger" role="alert">
-                ${mensaje}
-            </div>
-        `;
-    }
-</script>
-<div class="container">
-    <form>
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <label for="numero-seguimiento" class="correos-label">Número de seguimiento:</label>
-                <div class="input-group mb-3">
-                    <input type="text" id="numero-seguimiento" class="form-control" placeholder="Ejemplo: ABC123" aria-label="Número de seguimiento" aria-describedby="button-addon2">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Buscar</button>
-                    </div>
-                </div>
+<section class="container py-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="badge text-bg-primary mb-3">Prototipo de logística</span>
+            <h1 class="display-5 fw-bold">Tus envíos, con seguimiento claro.</h1>
+            <p class="lead text-secondary">Rocket Tracking es una aplicación de demostración para crear envíos, consultar su estado y probar un flujo de pago de integración.</p>
+            <div class="d-flex flex-wrap gap-2">
+                {% if user.is_authenticated %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'formulario' %}">Crear envío</a>
+                    <a class="btn btn-outline-secondary btn-lg" href="{% url 'mis_transacciones' %}">Mis envíos</a>
+                {% else %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Probar la aplicación</a>
+                    <a class="btn btn-outline-secondary btn-lg" href="{% url 'signin' %}">Ya tengo cuenta</a>
+                {% endif %}
             </div>
         </div>
-    </form>
-    <div id="resultado" class="row justify-content-center mt-3"></div>
-</div>
-
-
-
-
-<div class="container">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <h2>Envío Express - Mismo día en Santiago</h2>
-            <p>Realiza tu pedido antes de las 12 pm y recíbelo el mismo día en Santiago. Perfecto para cuando necesitas tus productos con urgencia.</p>
-        </div>
-        <div class="col-md-6">
-            <img src="{% static 'imagenes/EnvioExpress1.jpg' %}" width="200" height="350" class="d-block w-100" alt="Envío Express">
-            
+        <div class="col-lg-6">
+            <img class="img-fluid rounded-4 shadow-sm" src="{% static 'imagenes/Van.jpg' %}" alt="Vehículo de reparto de Rocket Tracking">
         </div>
     </div>
-</div>
+</section>
 
+<section class="bg-light py-5">
+    <div class="container" style="max-width: 52rem;">
+        <h2 class="h3 text-center mb-2">Consulta un envío</h2>
+        <p class="text-center text-secondary mb-4">Usa el código UUID que aparece al crear el envío. La consulta solo muestra el estado y los detalles del servicio.</p>
+        <form id="tracking-form" class="input-group input-group-lg" data-endpoint="{% url 'buscar_transaccion' %}">
+            <label class="visually-hidden" for="tracking-code">Código de seguimiento</label>
+            <input class="form-control" id="tracking-code" type="text" minlength="36" maxlength="36" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" required>
+            <button class="btn btn-primary" type="submit">Buscar</button>
+        </form>
+        <div id="tracking-result" class="mt-4" aria-live="polite"></div>
+    </div>
+</section>
 
-<div class="container">
-    <div class="row align-items-center">
+<section class="container py-5">
+    <div class="row g-4">
         <div class="col-md-6">
-            <img src="{% static 'imagenes/EnvioExpress2.jpg' %}" class="d-block w-100" alt="Envío Normal">
-
+            <article class="h-100 p-4 border rounded-4">
+                <h2 class="h4">Envío normal</h2>
+                <p class="text-secondary mb-0">Un flujo de demostración para entregas a distintas regiones de Chile.</p>
+            </article>
         </div>
         <div class="col-md-6">
-            <h2>Envío Normal - A todo Chile</h2>
-            <p>Enviamos tus productos a cualquier parte de Chile. Disfruta de un servicio de calidad y rapidez en la entrega a precios asequibles.</p>
+            <article class="h-100 p-4 border rounded-4">
+                <h2 class="h4">Envío express</h2>
+                <p class="text-secondary mb-0">Prueba una opción de entrega acelerada y compara el costo estimado.</p>
+            </article>
         </div>
     </div>
-</div>
-
+    <p class="small text-secondary mt-4 mb-0">Demo académica: utiliza información ficticia. No ingreses RUT, direcciones ni datos de pago reales.</p>
+</section>
 {% endblock %}
-
-{% block script %}
-    <script src="{% static 'js/jquery/jquery-3.6.4.min.js' %}"></script>
-    <script src="{% static 'js/jquery/jquery.validate.min.js' %}"></script>
-    <script src="{% static 'js/jquery/jquery.js' %}"></script>   
-{% endblock %}
+{% block script %}<script src="{% static 'js/seguimiento.js' %}" defer></script>{% endblock %}
