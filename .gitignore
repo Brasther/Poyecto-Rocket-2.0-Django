@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos locales
+.venv/
+venv/
+env/
+ENV/
+
+# Django: bases de datos y archivos generados
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+# Configuración local y secretos
+.env
+.env.*
+!.env.example
+
+# Editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

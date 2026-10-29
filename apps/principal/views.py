@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -10,8 +12,33 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from decimal import Decimal
 from .models import Transaccion
 from .forms import TransaccionForm
-from transbank.webpay.webpay_plus.transaction import Transaction  # Verifica si este import está correctamente ubicado en tu proyecto
+from transbank.common.integration_api_keys import IntegrationApiKeys
+from transbank.common.integration_commerce_codes import IntegrationCommerceCodes
+from transbank.common.integration_type import IntegrationType
+from transbank.common.options import WebpayOptions
+from transbank.webpay.webpay_plus.transaction import Transaction
 import random
+
+
+def obtener_transaccion_transbank():
+    configuracion = settings.TRANSBANK
+    entorno = configuracion['INTEGRATION_TYPE']
+    if entorno not in {'TEST', 'LIVE'}:
+        raise ImproperlyConfigured('TRANSBANK_INTEGRATION_TYPE debe ser TEST o LIVE.')
+
+    if entorno == 'TEST':
+        codigo_comercio = configuracion['COMMERCE_CODE'] or IntegrationCommerceCodes.WEBPAY_PLUS
+        api_key = configuracion['API_KEY'] or IntegrationApiKeys.WEBPAY
+    else:
+        codigo_comercio = configuracion['COMMERCE_CODE']
+        api_key = configuracion['API_KEY']
+        if not codigo_comercio or not api_key:
+            raise ImproperlyConfigured(
+                'Define TRANSBANK_COMMERCE_CODE y TRANSBANK_API_KEY para usar el entorno LIVE.'
+            )
+
+    opciones = WebpayOptions(codigo_comercio, api_key, IntegrationType[entorno])
+    return Transaction(opciones)
 
 def cargarInicio(request):
     return render(request, "inicio.html")
@@ -186,7 +213,7 @@ def iniciar_transaccion(request):
 
         amount = str(costo_total)
         return_url = request.build_absolute_uri('/transbank/completar-transaccion/')
-        response = Transaction().create(buy_order, session_id, amount, return_url)
+        response = obtener_transaccion_transbank().create(buy_order, session_id, amount, return_url)
 
         if 'token' in response and 'url' in response:
             return redirect(response['url'] + '?token_ws=' + response['token'])
@@ -243,7 +270,7 @@ def completar_transaccion(request):
     if not token_ws:
         return render(request, 'error.html', {'message': 'No se recibió el token_ws.'})
 
-    response = Transaction().commit(token_ws)
+    response = obtener_transaccion_transbank().commit(token_ws)
     if response['status'] == 'AUTHORIZED':
         transaccion = Transaccion.objects.get(buy_order=response['buy_order'])
         transaccion.pagado = True
